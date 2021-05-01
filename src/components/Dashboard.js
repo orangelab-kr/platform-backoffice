@@ -20,7 +20,7 @@ export const Dashboard = withRouter(({ history, children }) => {
 
   return (
     <Layout style={{ height: "100vh" }}>
-      <Sider collapsible>
+      <Sider collapsible defaultCollapsed={true}>
         <div className="logo" />
         <Menu
           theme="dark"
