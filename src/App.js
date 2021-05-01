@@ -1,7 +1,16 @@
 import "./App.css";
 
+import {
+  AccessKeys,
+  Logs,
+  Main,
+  NotFound,
+  PermissionGroups,
+  Settings,
+  Users,
+} from "./pages";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import { Dashboard, NotFound } from "./pages";
+import { Dashboard, RequiredLogin } from "./components";
 
 import { Login } from "./pages/Login";
 
@@ -12,7 +21,38 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route path="/" exact component={Dashboard} />
+          <Route path="/" exact>
+            <Redirect to="/dashboard" />
+          </Route>
+          <Route path="/dashboard">
+            <RequiredLogin>
+              <Dashboard>
+                <Switch>
+                  <Route path="/dashboard" exact>
+                    <Redirect to="/dashboard/main" />
+                  </Route>
+                  <Route path="/dashboard/main">
+                    <Main />
+                  </Route>
+                  <Route path="/dashboard/users">
+                    <Users />
+                  </Route>
+                  <Route path="/dashboard/accessKeys">
+                    <AccessKeys />
+                  </Route>
+                  <Route path="/dashboard/permissionGroups">
+                    <PermissionGroups />
+                  </Route>
+                  <Route path="/dashboard/logs">
+                    <Logs />
+                  </Route>
+                  <Route path="/dashboard/settings">
+                    <Settings />
+                  </Route>
+                </Switch>
+              </Dashboard>
+            </RequiredLogin>
+          </Route>
           <Route path="/auth">
             <Switch>
               <Route path="/auth" exact>

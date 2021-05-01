@@ -1,10 +1,11 @@
 import { Button, Col, Form, Input, Row } from "antd";
+import { Client, getAccessKey } from "../tools";
 
-import { Client } from "../tools";
 import React from "react";
 import { withRouter } from "react-router";
 
 export const Login = withRouter(({ history }) => {
+  if (getAccessKey()) history.push("/dashboard");
   const onFinish = async (body) => {
     const { data } = await Client.post("/auth/email", body);
     localStorage.setItem("sessionId", data.sessionId);

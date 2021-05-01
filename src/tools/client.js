@@ -47,7 +47,7 @@ function getInterceptorResponseError(err) {
   message.error(data.message);
 }
 
-function getAccessKey() {
+export function getAccessKey() {
   const sessionId = localStorage.getItem("sessionId");
   if (!sessionId) return;
   return `Bearer ${sessionId}`;
