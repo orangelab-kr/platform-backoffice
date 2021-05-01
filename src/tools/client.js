@@ -1,7 +1,7 @@
+import { InternalError } from "./error";
 import { OPCODE } from "./opcode";
 import axios from "axios";
 import { baseURL } from "..";
-import { message } from "antd";
 
 export const Client = axios.create();
 
@@ -23,14 +23,12 @@ function getInterceptorRequest(config) {
 
 function getInterceptorResponse(res) {
   if (!res) {
-    message.error("서버와 연결할 수 없습니다.");
-    return;
+    throw new InternalError("서버와 연결할 수 없습니다.");
   }
 
   const { data } = res;
   if (data.opcode !== OPCODE.SUCCESS) {
-    message.error(data.message);
-    return;
+    throw new InternalError(data.message);
   }
 
   return res;
@@ -38,13 +36,12 @@ function getInterceptorResponse(res) {
 
 function getInterceptorResponseError(err) {
   if (!err.response) {
-    message.error("서버와 연결할 수 없습니다.");
-    return;
+    throw new InternalError("서버와 연결할 수 없습니다.");
   }
 
   const { data } = err.response;
   if (data.opcode === OPCODE.SUCCESS) return err;
-  message.error(data.message);
+  throw new InternalError(data.message);
 }
 
 export function getAccessKey() {
