@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { Dashboard, NotFound } from "./pages";
+
+import { Login } from "./pages/Login";
+
+export const baseURL = "https://openapi.staging.hikick.kr/v1/platform";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" exact component={Dashboard} />
+          <Route path="/auth">
+            <Switch>
+              <Route path="/auth" exact>
+                <Redirect to="/auth/login" />
+              </Route>
+              <Route path="/auth/login" component={Login} />
+            </Switch>
+          </Route>
+          <Route path="*" component={NotFound} />
+        </Switch>
+      </BrowserRouter>
     </div>
   );
 }
