@@ -1,6 +1,6 @@
 import { OPCODE } from "./opcode";
 import axios from "axios";
-import { baseURL } from "../App";
+import { baseURL } from "..";
 import { message } from "antd";
 
 export const Client = axios.create();
