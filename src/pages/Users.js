@@ -37,6 +37,17 @@ export const Users = withRouter(({ history }) => {
       dataIndex: "phone",
       key: "phone",
     },
+    {
+      title: "권한 그룹",
+      dataIndex: "permissionGroup",
+      render: (permissionGroup) => (
+        <Link
+          to={`/dashboard/permissionGroups/${permissionGroup.permissionGroupId}`}
+        >
+          {permissionGroup.name}
+        </Link>
+      ),
+    },
   ];
 
   const requestUsers = () => {

@@ -19,8 +19,13 @@ export const Dashboard = withRouter(({ history, children }) => {
   const onClick = ({ key }) => history.push(key);
 
   return (
-    <Layout style={{ height: "100vh" }}>
-      <Sider collapsible defaultCollapsed={true}>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider
+        collapsible
+        width={150}
+        defaultCollapsed={true}
+        collapsedWidth={50}
+      >
         <div className="logo" />
         <Menu
           theme="dark"

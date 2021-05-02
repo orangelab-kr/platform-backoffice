@@ -8,7 +8,7 @@ import {
   PermissionGroups,
   Settings,
   Users,
-  UsersModify,
+  UsersDetails,
 } from "./pages";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { Dashboard, RequiredLogin } from "./components";
@@ -40,7 +40,7 @@ ReactDOM.render(
                   <Users />
                 </Route>
                 <Route path="/dashboard/users/:userId">
-                  <UsersModify />
+                  <UsersDetails />
                 </Route>
                 <Route path="/dashboard/accessKeys">
                   <AccessKeys />

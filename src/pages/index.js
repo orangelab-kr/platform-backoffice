@@ -5,4 +5,4 @@ export * from "./Users";
 export * from "./PermissionGroups";
 export * from "./Settings";
 export * from "./Logs";
-export * from "./UsersModify";
+export * from "./UsersDetails";

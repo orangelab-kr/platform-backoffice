@@ -13,7 +13,7 @@ export const Login = withRouter(({ history }) => {
   };
 
   return (
-    <Row style={{ height: "100vh" }} justify="center" align="middle">
+    <Row style={{ minHeight: "100vh" }} justify="center" align="middle">
       <Col lg={8} sm={12} align="center">
         <Form name="basic" layout="vertical" size="large" onFinish={onFinish}>
           <Form.Item label="이메일" name="email">

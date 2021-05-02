@@ -14,10 +14,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, withRouter } from "react-router-dom";
 
 import { Client } from "../tools";
+import { PermissionGroupsSelect } from "../components";
 
 const { Title } = Typography;
 
-export const UsersModify = withRouter(({ history }) => {
+export const UsersDetails = withRouter(({ history }) => {
+  const [user, setUser] = useState({ name: "로딩 중..." });
   const params = useParams();
   const userId = params.userId !== "add" ? params.userId : "";
   const form = Form.useForm()[0];
@@ -26,7 +28,9 @@ export const UsersModify = withRouter(({ history }) => {
   const loadUser = () => {
     if (!userId) return;
     setLoading(true);
+
     Client.get(`/users/${userId}`).then(({ data }) => {
+      setUser(data.platformUser);
       form.setFieldsValue(data.platformUser);
       setLoading(false);
     });
@@ -60,9 +64,7 @@ export const UsersModify = withRouter(({ history }) => {
         <Form layout="vertical" onFinish={onSave} form={form}>
           <Row justify="space-between" style={{ marginBottom: 20 }}>
             <Col>
-              <Title level={3}>
-                {userId ? form.getFieldValue("name") : "새로운 사용자"}
-              </Title>
+              <Title level={3}>{userId ? user.name : "새로운 사용자"}</Title>
             </Col>
             <Col>
               <Row gutter={[4, 0]}>
@@ -109,7 +111,10 @@ export const UsersModify = withRouter(({ history }) => {
             <Input.Password disabled={isLoading} />
           </Form.Item>
           <Form.Item name="permissionGroupId" label="권한 그룹">
-            <Input disabled={isLoading} />
+            <PermissionGroupsSelect
+              isLoading={isLoading}
+              defaultPermissionGroup={user.permissionGroup}
+            />
           </Form.Item>
         </Form>
       </Card>
