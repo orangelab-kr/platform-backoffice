@@ -2,7 +2,7 @@ import { Button, Col, Form, Input, Row } from "antd";
 import { Client, getAccessKey } from "../tools";
 
 import React from "react";
-import { withRouter } from "react-router";
+import { withRouter } from "react-router-dom";
 
 export const Login = withRouter(({ history }) => {
   if (getAccessKey()) history.push("/dashboard");

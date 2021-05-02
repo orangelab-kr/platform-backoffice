@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { Client } from "../tools";
 import { Link } from "react-router-dom";
 import { UserAddOutlined } from "@ant-design/icons";
-import { withRouter } from "react-router";
+import dayjs from "dayjs";
+import { withRouter } from "react-router-dom";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -47,6 +48,11 @@ export const Users = withRouter(({ history }) => {
           {permissionGroup.name}
         </Link>
       ),
+    },
+    {
+      title: "생성 일자",
+      dataIndex: "createdAt",
+      render: (createdAt) => dayjs(createdAt).format("YYYY년 MM월 DD일"),
     },
   ];
 
@@ -110,6 +116,7 @@ export const Users = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="platformUserId"
           loading={isLoading}
+          scroll={{ x: "100%" }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,

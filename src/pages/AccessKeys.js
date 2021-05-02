@@ -22,7 +22,7 @@ import { Client } from "../tools";
 import { Link } from "react-router-dom";
 import clipboard from "copy-to-clipboard";
 import dayjs from "dayjs";
-import { withRouter } from "react-router";
+import { withRouter } from "react-router-dom";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -54,7 +54,7 @@ export const AccessKeys = withRouter(({ history }) => {
               <Col span={24}>
                 <Alert
                   showIcon
-                  message="절대로 외부에 공개되어서는 안됩니다."
+                  message="절대로 해당 키를 유출하지 마세요."
                   type="warning"
                 />
               </Col>
@@ -117,13 +117,18 @@ export const AccessKeys = withRouter(({ history }) => {
         <Row gutter={[8, 8]}>
           <Col>
             <Button
+              disabled={isLoading}
               type="primary"
               icon={<ZoomInOutlined />}
               onClick={openKey(value)}
             />
           </Col>
           <Col>
-            <Button icon={<CopyOutlined />} onClick={copyKey(value)} />
+            <Button
+              disabled={isLoading}
+              icon={<CopyOutlined />}
+              onClick={copyKey(value)}
+            />
           </Col>
         </Row>
       ),
@@ -193,7 +198,11 @@ export const AccessKeys = withRouter(({ history }) => {
               </Col>
               <Col>
                 <Link to="/dashboard/accessKeys/add">
-                  <Button icon={<UserAddOutlined />} type="primary">
+                  <Button
+                    icon={<UserAddOutlined />}
+                    type="primary"
+                    disabled={isLoading}
+                  >
                     액세스 키 추가
                   </Button>
                 </Link>
@@ -206,6 +215,7 @@ export const AccessKeys = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="platformAccessKeyId"
           loading={isLoading}
+          scroll={{ x: "100%" }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,

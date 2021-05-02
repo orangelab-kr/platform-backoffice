@@ -9,7 +9,7 @@ import {
 import { Layout, Menu } from "antd";
 
 import React from "react";
-import { withRouter } from "react-router";
+import { withRouter } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 

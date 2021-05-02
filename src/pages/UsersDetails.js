@@ -9,7 +9,7 @@ import {
   Typography,
   message,
 } from "antd";
-import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import { useParams, withRouter } from "react-router-dom";
 
@@ -87,12 +87,12 @@ export const UsersDetails = withRouter(({ history }) => {
                 )}
                 <Col>
                   <Button
-                    icon={<SaveOutlined />}
+                    icon={userId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
                     type="primary"
                     htmlType="submit"
                   >
-                    저장하기
+                    {userId ? "저장하기" : "생성하기"}
                   </Button>
                 </Col>
               </Row>
