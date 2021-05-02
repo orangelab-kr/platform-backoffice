@@ -2,6 +2,7 @@ import "./index.css";
 
 import {
   AccessKeys,
+  AccessKeysDetails,
   Logs,
   Main,
   NotFound,
@@ -36,14 +37,17 @@ ReactDOM.render(
                 <Route path="/dashboard/main">
                   <Main />
                 </Route>
-                <Route exact path="/dashboard/users">
+                <Route path="/dashboard/users" exact>
                   <Users />
                 </Route>
                 <Route path="/dashboard/users/:userId">
                   <UsersDetails />
                 </Route>
-                <Route path="/dashboard/accessKeys">
+                <Route path="/dashboard/accessKeys" exact>
                   <AccessKeys />
+                </Route>
+                <Route path="/dashboard/accessKeys/:platformAccessKeyId">
+                  <AccessKeysDetails />
                 </Route>
                 <Route path="/dashboard/permissionGroups">
                   <PermissionGroups />

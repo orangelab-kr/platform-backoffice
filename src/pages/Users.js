@@ -59,7 +59,6 @@ export const Users = withRouter(({ history }) => {
     };
 
     Client.get("/users", { params }).then((res) => {
-      if (!res) return;
       const { platformUsers, total } = res.data;
       setDataSource(platformUsers);
       setTotal(total);
@@ -68,7 +67,6 @@ export const Users = withRouter(({ history }) => {
   };
 
   const onPagnationChange = (page, pageSize) => {
-    console.log(page, pageSize);
     setTake(pageSize);
     setSkip(page * pageSize);
     requestUsers();
