@@ -7,6 +7,7 @@ import {
   Main,
   NotFound,
   PermissionGroups,
+  PermissionGroupsDetails,
   Settings,
   Users,
   UsersDetails,
@@ -49,8 +50,11 @@ ReactDOM.render(
                 <Route path="/dashboard/accessKeys/:platformAccessKeyId">
                   <AccessKeysDetails />
                 </Route>
-                <Route path="/dashboard/permissionGroups">
+                <Route path="/dashboard/permissionGroups" exact>
                   <PermissionGroups />
+                </Route>
+                <Route path="/dashboard/permissionGroups/:permissionGroupId">
+                  <PermissionGroupsDetails />
                 </Route>
                 <Route path="/dashboard/logs">
                   <Logs />

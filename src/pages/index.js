@@ -7,3 +7,4 @@ export * from "./Settings";
 export * from "./Logs";
 export * from "./UsersDetails";
 export * from "./AccessKeysDetails";
+export * from "./PermissionGroupsDetails";

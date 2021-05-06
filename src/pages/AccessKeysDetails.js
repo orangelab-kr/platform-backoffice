@@ -147,10 +147,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
             </>
           )}
           <Form.Item name="permissionGroupId" label="권한 그룹">
-            <PermissionGroupsSelect
-              isLoading={isLoading}
-              defaultPermissionGroup={accessKey.permissionGroup}
-            />
+            <PermissionGroupsSelect isLoading={isLoading} />
           </Form.Item>
         </Form>
       </Card>
