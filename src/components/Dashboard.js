@@ -52,6 +52,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           <Menu.Item key="/dashboard/logs" icon={<HistoryOutlined />}>
             로그
           </Menu.Item>
+          <Menu.Item key="/dashboard/webhooks" icon={<HistoryOutlined />}>
+            웹훅
+          </Menu.Item>
           <Menu.Item key="/dashboard/settings" icon={<SettingOutlined />}>
             설정
           </Menu.Item>

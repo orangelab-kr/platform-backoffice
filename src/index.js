@@ -12,6 +12,7 @@ import {
   Settings,
   Users,
   UsersDetails,
+  Webhooks,
 } from "./pages";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { Dashboard, RequiredLogin } from "./components";
@@ -63,6 +64,9 @@ ReactDOM.render(
                 </Route>
                 <Route path="/dashboard/permissionGroups/:permissionGroupId">
                   <PermissionGroupsDetails />
+                </Route>
+                <Route path="/dashboard/webhooks">
+                  <Webhooks />
                 </Route>
                 <Route path="/dashboard/logs">
                   <Logs />

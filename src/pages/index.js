@@ -9,3 +9,4 @@ export * from "./UsersDetails";
 export * from "./AccessKeysDetails";
 export * from "./PermissionGroupsDetails";
 export * from "./Rides";
+export * from "./Webhooks";
