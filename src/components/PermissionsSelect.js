@@ -10,7 +10,7 @@ export const PermissionsSelect = ({ id, isLoading, onChange, value }) => {
   const [permissions, setPermissions] = useState([]);
   const requestSearch = (search = value) => {
     if (search instanceof Array) return;
-    Client.get("/permissions", {
+    Client.get("/platform/permissions", {
       params: {
         search,
         take: 10,

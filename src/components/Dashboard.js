@@ -3,6 +3,7 @@ import {
   HomeOutlined,
   KeyOutlined,
   LockOutlined,
+  ReloadOutlined,
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -44,6 +45,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/dashboard/permissionGroups" icon={<LockOutlined />}>
             권한 그룹
+          </Menu.Item>
+          <Menu.Item key="/dashboard/rides" icon={<ReloadOutlined />}>
+            라이드
           </Menu.Item>
           <Menu.Item key="/dashboard/logs" icon={<HistoryOutlined />}>
             로그

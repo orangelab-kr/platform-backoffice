@@ -8,6 +8,7 @@ import {
   NotFound,
   PermissionGroups,
   PermissionGroupsDetails,
+  Rides,
   Settings,
   Users,
   UsersDetails,
@@ -19,7 +20,8 @@ import { Login } from "./pages/Login";
 import React from "react";
 import ReactDOM from "react-dom";
 
-export const baseURL = "https://openapi.staging.hikick.kr/v1/platform";
+export const baseURL = "https://openapi.staging.hikick.kr/v1";
+// export const baseURL = "http://localhost/v1";
 
 ReactDOM.render(
   <div className="App">
@@ -43,6 +45,12 @@ ReactDOM.render(
                 </Route>
                 <Route path="/dashboard/users/:userId">
                   <UsersDetails />
+                </Route>
+                <Route path="/dashboard/rides" exact>
+                  <Rides />
+                </Route>
+                <Route path="/dashboard/rides/:rideId">
+                  {/* <UsersDetails /> */}
                 </Route>
                 <Route path="/dashboard/accessKeys" exact>
                   <AccessKeys />

@@ -41,21 +41,23 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
     if (!permissionGroupId) return;
     setLoading(true);
 
-    Client.get(`/permissionGroups/${permissionGroupId}`).then(({ data }) => {
-      const { permissionGroup } = data;
+    Client.get(`/platform/permissionGroups/${permissionGroupId}`).then(
+      ({ data }) => {
+        const { permissionGroup } = data;
 
-      permissionGroup.permissions = permissionGroup.permissions.map(
-        ({ permissionId, name }) => ({
-          key: permissionId,
-          label: name,
-          value: permissionId,
-        })
-      );
+        permissionGroup.permissions = permissionGroup.permissions.map(
+          ({ permissionId, name }) => ({
+            key: permissionId,
+            label: name,
+            value: permissionId,
+          })
+        );
 
-      setPermissionGroup(permissionGroup);
-      form.setFieldsValue(permissionGroup);
-      setLoading(false);
-    });
+        setPermissionGroup(permissionGroup);
+        form.setFieldsValue(permissionGroup);
+        setLoading(false);
+      }
+    );
   };
 
   const deletePermissionGroup = () => {
@@ -71,7 +73,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
     setLoading(true);
     body.permissionIds = body.permissions.map(({ value }) => value);
     delete body.permissions;
-    Client.post(`/permissionGroups/${permissionGroupId}`, body).then(
+    Client.post(`/platform/permissionGroups/${permissionGroupId}`, body).then(
       ({ data }) => {
         message.success(`${permissionGroupId ? "수정" : "생성"}되었습니다.`);
         setLoading(false);

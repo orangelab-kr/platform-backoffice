@@ -71,7 +71,9 @@ export const AccessKeys = withRouter(({ history }) => {
   const setEnabled = async (accessKey, isEnabled) => {
     setLoading(true);
     const { platformAccessKeyId } = accessKey;
-    await Client.post(`/accessKeys/${platformAccessKeyId}`, { isEnabled });
+    await Client.post(`/platform/accessKeys/${platformAccessKeyId}`, {
+      isEnabled,
+    });
     accessKey.isEnabled = isEnabled;
     setLoading(false);
   };
@@ -159,7 +161,7 @@ export const AccessKeys = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/accessKeys", { params }).then((res) => {
+    Client.get("/platform/accessKeys", { params }).then((res) => {
       const { platformAccessKeys, total } = res.data;
       setDataSource(platformAccessKeys);
       setTotal(total);

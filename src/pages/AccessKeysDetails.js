@@ -40,7 +40,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
     if (!accessKeyId) return;
     setLoading(true);
 
-    Client.get(`/accessKeys/${accessKeyId}`).then(({ data }) => {
+    Client.get(`/platform/accessKeys/${accessKeyId}`).then(({ data }) => {
       setAccessKey(data.platformAccessKey);
       form.setFieldsValue(data.platformAccessKey);
       setEnabled(data.platformAccessKey.isEnabled);
@@ -50,7 +50,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
 
   const deleteAccessKey = () => {
     setLoading(true);
-    Client.delete(`/accessKeys/${accessKeyId}`).then(() => {
+    Client.delete(`/platform/accessKeys/${accessKeyId}`).then(() => {
       message.success(`삭제되었습니다.`);
       setLoading(false);
       history.push(`/dashboard/accessKeys`);
@@ -59,14 +59,16 @@ export const AccessKeysDetails = withRouter(({ history }) => {
 
   const onSave = (body) => {
     setLoading(true);
-    Client.post(`/accessKeys/${accessKeyId}`, body).then(({ data }) => {
-      message.success(`${accessKeyId ? "수정" : "생성"}되었습니다.`);
-      setLoading(false);
+    Client.post(`/platform/accessKeys/${accessKeyId}`, body).then(
+      ({ data }) => {
+        message.success(`${accessKeyId ? "수정" : "생성"}되었습니다.`);
+        setLoading(false);
 
-      if (data.platformAccessKeyId) {
-        history.push(`/dashboard/accessKeys/${data.platformAccessKeyId}`);
+        if (data.platformAccessKeyId) {
+          history.push(`/dashboard/accessKeys/${data.platformAccessKeyId}`);
+        }
       }
-    });
+    );
   };
 
   useEffect(loadAccessKey, [form, accessKeyId]);

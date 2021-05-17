@@ -29,7 +29,7 @@ export const UsersDetails = withRouter(({ history }) => {
     if (!userId) return;
     setLoading(true);
 
-    Client.get(`/users/${userId}`).then(({ data }) => {
+    Client.get(`/platform/users/${userId}`).then(({ data }) => {
       setUser(data.platformUser);
       form.setFieldsValue(data.platformUser);
       setLoading(false);
@@ -38,7 +38,7 @@ export const UsersDetails = withRouter(({ history }) => {
 
   const deleteUser = () => {
     setLoading(true);
-    Client.delete(`/users/${userId}`).then(() => {
+    Client.delete(`/platform/users/${userId}`).then(() => {
       message.success(`삭제되었습니다.`);
       setLoading(false);
       history.push(`/dashboard/users`);
@@ -47,7 +47,7 @@ export const UsersDetails = withRouter(({ history }) => {
 
   const onSave = (body) => {
     setLoading(true);
-    Client.post(`/users/${userId}`, body).then(({ data }) => {
+    Client.post(`/platform/users/${userId}`, body).then(({ data }) => {
       message.success(`${userId ? "수정" : "생성"}되었습니다.`);
       setLoading(false);
 

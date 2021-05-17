@@ -73,7 +73,7 @@ export const PermissionGroups = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/permissionGroups", { params }).then((res) => {
+    Client.get("/platform/permissionGroups", { params }).then((res) => {
       const { permissionGroups, total } = res.data;
       setDataSource(permissionGroups);
       setTotal(total);

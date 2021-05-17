@@ -9,7 +9,7 @@ const { Option } = Select;
 export const PermissionGroupsSelect = ({ id, isLoading, onChange, value }) => {
   const [permissionGroups, setPermissionGroups] = useState([]);
   const requestSearch = (search = value) => {
-    Client.get("/permissionGroups", {
+    Client.get("/platform/permissionGroups", {
       params: {
         search,
         take: 10,

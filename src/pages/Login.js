@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 export const Login = withRouter(({ history }) => {
   if (getAccessKey()) history.push("/dashboard");
   const onFinish = async (body) => {
-    const { data } = await Client.post("/auth/email", body);
+    const { data } = await Client.post("/platform/auth/email", body);
     localStorage.setItem("sessionId", data.sessionId);
     history.push("/");
   };
