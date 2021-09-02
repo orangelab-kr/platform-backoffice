@@ -1,8 +1,12 @@
-import "./index.css";
-
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { Dashboard, RequiredLogin } from './components';
+import './index.css';
 import {
   AccessKeys,
   AccessKeysDetails,
+  Login,
   Logs,
   Main,
   NotFound,
@@ -13,15 +17,9 @@ import {
   Users,
   UsersDetails,
   Webhooks,
-} from "./pages";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
-import { Dashboard, RequiredLogin } from "./components";
+} from './pages';
 
-import { Login } from "./pages/Login";
-import React from "react";
-import ReactDOM from "react-dom";
-
-export const baseURL = "https://openapi.staging.hikick.kr/v1";
+export const baseURL = 'https://openapi.staging.hikick.kr/v1';
 // export const baseURL = "http://localhost/v1";
 
 ReactDOM.render(
@@ -90,5 +88,5 @@ ReactDOM.render(
       </Switch>
     </BrowserRouter>
   </div>,
-  document.getElementById("root")
+  document.getElementById('root')
 );

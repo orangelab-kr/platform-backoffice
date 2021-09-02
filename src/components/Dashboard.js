@@ -6,11 +6,10 @@ import {
   ReloadOutlined,
   SettingOutlined,
   UserOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu } from "antd";
-
-import React from "react";
-import { withRouter } from "react-router-dom";
+} from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
+import React from 'react';
+import { withRouter } from 'react-router-dom';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -20,7 +19,7 @@ export const Dashboard = withRouter(({ history, children }) => {
   const onClick = ({ key }) => history.push(key);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: '100vh' }}>
       <Sider
         collapsible
         width={150}
@@ -61,9 +60,9 @@ export const Dashboard = withRouter(({ history, children }) => {
         </Menu>
       </Sider>
       <Layout>
-        <Header style={{ height: "68px" }} />
-        <Content style={{ margin: "10px 16px" }}>{children}</Content>
-        <Footer style={{ textAlign: "center" }}>HIKICK Platform ❤️</Footer>
+        <Header style={{ height: '68px' }} />
+        <Content style={{ margin: '10px 16px' }}>{children}</Content>
+        <Footer style={{ textAlign: 'center' }}>HIKICK Platform ❤️</Footer>
       </Layout>
     </Layout>
   );
