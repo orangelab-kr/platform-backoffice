@@ -1,4 +1,4 @@
-import { SaveOutlined } from "@ant-design/icons";
+import { SaveOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -9,12 +9,12 @@ import {
   message,
   Row,
   Table,
-  Typography,
-} from "antd";
-import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
-import { Client } from "../tools";
+  Typography
+} from 'antd';
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { Client } from '../tools';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -24,49 +24,49 @@ export const Webhooks = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [settings, setSettings] = useState({});
   const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const columns = [
     {
-      title: "요청 ID",
-      dataIndex: "requestId",
+      title: '요청 ID',
+      dataIndex: 'requestId',
       render: (value) => (
         <Link to={`/dashboard/webhooks/${value}`}>{value}</Link>
       ),
     },
     {
-      title: "웹훅 유형",
-      dataIndex: "webhook",
+      title: '웹훅 유형',
+      dataIndex: 'webhook',
       render: (webhook) =>
-        webhook.type === "rideEnd"
-          ? "라이드 종료"
-          : webhook.type === "payment"
-          ? "결제 호출"
-          : webhook.type === "refund"
-          ? "환불 호출"
+        webhook.type === 'rideEnd'
+          ? '라이드 종료'
+          : webhook.type === 'payment'
+          ? '결제 호출'
+          : webhook.type === 'refund'
+          ? '환불 호출'
           : webhook.type,
     },
     {
-      title: "요청 일자",
-      dataIndex: "createdAt",
+      title: '요청 일자',
+      dataIndex: 'createdAt',
       render: (createdAt) =>
-        dayjs(createdAt).format("YYYY년 MM월 DD일 hh시 mm분 ss초"),
+        dayjs(createdAt).format('YYYY년 MM월 DD일 hh시 mm분 ss초'),
     },
     {
-      title: "완료 일자",
-      dataIndex: "completedAt",
+      title: '완료 일자',
+      dataIndex: 'completedAt',
       render: (completedAt) =>
         completedAt
-          ? dayjs(completedAt).format("YYYY년 MM월 DD일 hh시 mm분 ss초")
-          : "전송 실패",
+          ? dayjs(completedAt).format('YYYY년 MM월 DD일 hh시 mm분 ss초')
+          : '전송 실패',
     },
   ];
 
   const requestWebhookSettings = () => {
     setLoading(true);
-    Client.get("/webhook/settings").then((res) => {
+    Client.get('/webhook/settings').then((res) => {
       const fields = {};
       const { webhooks } = res.data;
       webhooks.forEach(({ type, url }) => (fields[type] = url));
@@ -80,7 +80,7 @@ export const Webhooks = withRouter(({ history }) => {
     setLoading(true);
     await Promise.all([
       Object.keys(settings).map((type) =>
-        Client.post(`/webhook/settings/${type}`, { url: settings[type] })
+        Client.post(`/webhook/settings/${type}`, { url: settings[type] || '' })
       ),
     ]);
 
@@ -96,7 +96,7 @@ export const Webhooks = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/webhook/requests", { params }).then((res) => {
+    Client.get('/webhook/requests', { params }).then((res) => {
       const { requests, total } = res.data;
       setDataSource(requests);
       setTotal(total);
@@ -144,12 +144,12 @@ export const Webhooks = withRouter(({ history }) => {
                     key={type}
                     name={type}
                     label={
-                      type === "rideEnd"
-                        ? "라이드 종료"
-                        : type === "payment"
-                        ? "결제 호출"
-                        : type === "refund"
-                        ? "환불 호출"
+                      type === 'rideEnd'
+                        ? '라이드 종료'
+                        : type === 'payment'
+                        ? '결제 호출'
+                        : type === 'refund'
+                        ? '환불 호출'
                         : type
                     }
                   >
@@ -172,7 +172,7 @@ export const Webhooks = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="requestId"
           loading={isLoading}
-          scroll={{ x: "100%" }}
+          scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,
