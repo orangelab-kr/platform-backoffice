@@ -13,10 +13,12 @@ import {
   PermissionGroups,
   PermissionGroupsDetails,
   Rides,
+  RidesDetails,
   Settings,
   Users,
   UsersDetails,
   Webhooks,
+  WebhooksDetails,
 } from './pages';
 
 export const baseURL = 'https://openapi.staging.hikick.kr/v1';
@@ -49,7 +51,7 @@ ReactDOM.render(
                   <Rides />
                 </Route>
                 <Route path="/dashboard/rides/:rideId">
-                  {/* <UsersDetails /> */}
+                  <RidesDetails />
                 </Route>
                 <Route path="/dashboard/accessKeys" exact>
                   <AccessKeys />
@@ -63,8 +65,11 @@ ReactDOM.render(
                 <Route path="/dashboard/permissionGroups/:permissionGroupId">
                   <PermissionGroupsDetails />
                 </Route>
-                <Route path="/dashboard/webhooks">
+                <Route path="/dashboard/webhooks" exact>
                   <Webhooks />
+                </Route>
+                <Route path="/dashboard/webhooks/:requestId">
+                  <WebhooksDetails />
                 </Route>
                 <Route path="/dashboard/logs">
                   <Logs />

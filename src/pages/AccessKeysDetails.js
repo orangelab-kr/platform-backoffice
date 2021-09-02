@@ -9,30 +9,30 @@ import {
   Row,
   Typography,
   message,
-} from "antd";
-import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
-import { useParams, withRouter } from "react-router-dom";
+} from 'antd';
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { useParams, withRouter } from 'react-router-dom';
 
-import { Client } from "../tools";
-import { PermissionGroupsSelect } from "../components";
-import clipboard from "copy-to-clipboard";
+import { Client } from '../tools';
+import { PermissionGroupsSelect } from '../components';
+import clipboard from 'copy-to-clipboard';
 
 const { Title } = Typography;
 
 export const AccessKeysDetails = withRouter(({ history }) => {
-  const [accessKey, setAccessKey] = useState({ name: "로딩 중..." });
+  const [accessKey, setAccessKey] = useState({ name: '로딩 중...' });
   const [enabled, setEnabled] = useState(true);
   const params = useParams();
   const accessKeyId =
-    params.platformAccessKeyId !== "add" ? params.platformAccessKeyId : "";
+    params.platformAccessKeyId !== 'add' ? params.platformAccessKeyId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
   const copyKey = (value) => {
     return () => {
       clipboard(value);
-      message.success("복사되었습니다.");
+      message.success('복사되었습니다.');
     };
   };
 
@@ -61,7 +61,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
     setLoading(true);
     Client.post(`/platform/accessKeys/${accessKeyId}`, body).then(
       ({ data }) => {
-        message.success(`${accessKeyId ? "수정" : "생성"}되었습니다.`);
+        message.success(`${accessKeyId ? '수정' : '생성'}되었습니다.`);
         setLoading(false);
 
         if (data.platformAccessKeyId) {
@@ -83,8 +83,8 @@ export const AccessKeysDetails = withRouter(({ history }) => {
         >
           <Row justify="space-between" style={{ marginBottom: 20 }}>
             <Col>
-              <Title level={3}>
-                {accessKeyId ? accessKey.name : "새로운 액세스 키"}
+              <Title level={3} copyable={accessKeyId}>
+                {accessKeyId ? accessKey.name : '새로운 액세스 키'}
               </Title>
             </Col>
             <Col>
@@ -113,7 +113,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
                     type="primary"
                     htmlType="submit"
                   >
-                    {accessKeyId ? "저장하기" : "생성하기"}
+                    {accessKeyId ? '저장하기' : '생성하기'}
                   </Button>
                 </Col>
               </Row>
@@ -124,7 +124,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
               disabled={isLoading}
               onChange={({ target }) => setEnabled(target.checked)}
             >
-              {enabled ? "활성화됨" : "비활성화됨"}
+              {enabled ? '활성화됨' : '비활성화됨'}
             </Checkbox>
           </Form.Item>
           <Form.Item name="name" label="이름">

@@ -1,11 +1,18 @@
-import { ApiOutlined, CheckCircleOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Input, Row, Table, Tag, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import { ApiOutlined } from '@ant-design/icons';
+import {
+  Badge,
+  Button,
+  Card,
+  Col,
+  Input,
+  Row,
+  Table, Typography
+} from 'antd';
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { Client } from '../tools';
 
-import { Client } from "../tools";
-import { Link } from "react-router-dom";
-import dayjs from "dayjs";
-import { withRouter } from "react-router-dom";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -13,53 +20,74 @@ const { Search } = Input;
 export const Rides = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
 
   const columns = [
     {
-      title: "UUID",
-      dataIndex: "rideId",
+      title: 'UUID',
+      dataIndex: 'rideId',
       render: (value) => <Link to={`/dashboard/rides/${value}`}>{value}</Link>,
     },
     {
-      title: "이름",
-      dataIndex: "name",
-      key: "name",
+      title: '현재 상태',
+      dataIndex: 'terminatedAt',
+      render: (terminatedAt) =>
+        !terminatedAt ? (
+          <Badge status="processing" text="탑승 중..." />
+        ) : (
+          <Badge status="success" text="탑승 종료됨" />
+        ),
     },
     {
-      title: "설명",
-      dataIndex: "description",
-      key: "description",
+      title: '시작 일자',
+      dataIndex: 'startedAt',
+      render: (startedAt) => dayjs(startedAt).format('YYYY년 M월 D일 H시 m분'),
     },
     {
-      title: "권한",
-      dataIndex: "permissions",
-      render: (permissions) => (
-        <>
-          {permissions.map((permission, i) => {
-            if (i > 3) return <></>;
-            if (i === 3) {
-              return <Tag color="red">이외 {permissions.length - i}개</Tag>;
-            }
-
-            return <Tag>{permission.name}</Tag>;
-          })}
-        </>
-      ),
+      title: '킥보드 코드',
+      dataIndex: 'kickboardCode',
+      key: 'kickboardCode',
     },
     {
-      title: "커스텀",
-      dataIndex: "platformId",
-      render: (platformId) =>
-        platformId && <CheckCircleOutlined style={{ color: "green" }} />,
+      title: '이름',
+      dataIndex: 'realname',
+      key: 'realname',
     },
     {
-      title: "생성 일자",
-      dataIndex: "createdAt",
-      render: (createdAt) => dayjs(createdAt).format("YYYY년 MM월 DD일"),
+      title: '전화번호',
+      dataIndex: 'phone',
+      key: 'phone',
+    },
+    {
+      title: '가격',
+      dataIndex: 'price',
+      render: (price) => `${price.toLocaleString()}원`,
+    },
+    {
+      title: '쿠폰',
+      dataIndex: 'discountId',
+      render: (discountId) => (discountId ? '쿠폰 사용됨' : '사용하지 않음'),
+    },
+    {
+      title: '종료 방식',
+      dataIndex: 'terminatedType',
+      render: (terminatedType) =>
+        terminatedType === 'USER_REQUESTED'
+          ? '사용자 요청'
+          : terminatedType === 'ADMIN_REQUESTED'
+          ? '관리자 요청'
+          : terminatedType === 'UNUSED'
+          ? '자동 종료'
+          : '',
+    },
+    {
+      title: '종료 일자',
+      dataIndex: 'terminatedAt',
+      render: (terminatedAt) =>
+        terminatedAt ? dayjs(terminatedAt).format('HH시 mm분') : '',
     },
   ];
 
@@ -71,7 +99,7 @@ export const Rides = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/ride/rides", { params }).then((res) => {
+    Client.get('/ride/rides', { params }).then((res) => {
       const { rides, total } = res.data;
       setDataSource(rides);
       setTotal(total);
@@ -115,7 +143,7 @@ export const Rides = withRouter(({ history }) => {
                     type="primary"
                     disabled={isLoading}
                   >
-                    권한 그룹 추가
+                    라이드 시작
                   </Button>
                 </Link>
               </Col>
@@ -127,7 +155,7 @@ export const Rides = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="rideId"
           loading={isLoading}
-          scroll={{ x: "100%" }}
+          scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,
