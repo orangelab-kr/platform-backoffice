@@ -1,10 +1,11 @@
 import {
+  DeploymentUnitOutlined,
   HistoryOutlined,
   HomeOutlined,
   KeyOutlined,
   LockOutlined,
-  ReloadOutlined,
   SettingOutlined,
+  SolutionOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
@@ -45,14 +46,17 @@ export const Dashboard = withRouter(({ history, children }) => {
           <Menu.Item key="/dashboard/permissionGroups" icon={<LockOutlined />}>
             권한 그룹
           </Menu.Item>
-          <Menu.Item key="/dashboard/rides" icon={<ReloadOutlined />}>
+          <Menu.Item key="/dashboard/rides" icon={<SolutionOutlined />}>
             라이드
+          </Menu.Item>
+          <Menu.Item
+            key="/dashboard/webhooks"
+            icon={<DeploymentUnitOutlined />}
+          >
+            웹훅
           </Menu.Item>
           <Menu.Item key="/dashboard/logs" icon={<HistoryOutlined />}>
             로그
-          </Menu.Item>
-          <Menu.Item key="/dashboard/webhooks" icon={<HistoryOutlined />}>
-            웹훅
           </Menu.Item>
           <Menu.Item key="/dashboard/settings" icon={<SettingOutlined />}>
             설정
