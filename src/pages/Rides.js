@@ -1,18 +1,9 @@
 import { ApiOutlined } from '@ant-design/icons';
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Input,
-  Row,
-  Table, Typography
-} from 'antd';
+import { Badge, Button, Card, Col, Input, Row, Table, Typography } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Client } from '../tools';
-
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -64,7 +55,8 @@ export const Rides = withRouter(({ history }) => {
     {
       title: '가격',
       dataIndex: 'price',
-      render: (price) => `${price.toLocaleString()}원`,
+      render: (price, { terminatedAt }) =>
+        terminatedAt ? `${price.toLocaleString()}원` : '',
     },
     {
       title: '쿠폰',
@@ -124,7 +116,7 @@ export const Rides = withRouter(({ history }) => {
       <Card>
         <Row justify="space-between">
           <Col>
-            <Title level={3}>권한 그룹 목록</Title>
+            <Title level={3}>라이드 목록</Title>
           </Col>
           <Col>
             <Row>
