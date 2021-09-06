@@ -29,7 +29,7 @@ export const Rides = withRouter(({ history }) => {
         !terminatedAt ? (
           <Badge status="processing" text="탑승 중..." />
         ) : (
-          <Badge status="success" text="탑승 종료됨" />
+          <Badge status="success" text="종료됨" />
         ),
     },
     {
