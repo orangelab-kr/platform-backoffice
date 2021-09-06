@@ -1,19 +1,25 @@
-import { SmileOutlined, StopOutlined } from '@ant-design/icons';
+import { PlusOutlined, SmileOutlined, StopOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
   Card,
   Col,
   Descriptions,
+  Form,
   Image,
+  Input,
+  InputNumber,
   List,
+  Modal,
   Popconfirm,
+  Radio,
   Result,
   Row,
   Tabs,
   Tag,
   Typography,
 } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import {
@@ -29,6 +35,8 @@ export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
   const [ridePayments, setRidePayments] = useState([]);
   const [timeline, setTimeline] = useState([]);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const addPaymentForm = useForm()[0];
   const params = useParams();
   const rideId = params.rideId !== 'add' ? params.rideId : '';
   const [isLoading, setLoading] = useState(false);
@@ -68,6 +76,16 @@ export const RidesDetails = withRouter(() => {
     Client.delete(`/ride/rides/${rideId}/payments/${paymentId}`).then(() => {
       loadRidePayments();
       setLoading(false);
+    });
+  };
+
+  const onAddPayment = (paymentInfo) => {
+    setLoading(true);
+
+    Client.post(`/ride/rides/${rideId}/payments`, paymentInfo).then(() => {
+      loadRidePayments();
+      setLoading(false);
+      setShowAddPayment(false);
     });
   };
 
@@ -268,7 +286,128 @@ export const RidesDetails = withRouter(() => {
                 </Col>
                 <Col span={24}>
                   <Card>
-                    <Typography.Title level={4}>결제 정보</Typography.Title>
+                    <Row justify="space-between">
+                      <Col>
+                        <Typography.Title level={4}>결제 정보</Typography.Title>
+                      </Col>
+                      <Col>
+                        <Button
+                          style={{ margin: 3 }}
+                          icon={<PlusOutlined />}
+                          onClick={() => setShowAddPayment(true)}
+                        >
+                          추가 결제
+                        </Button>
+                        <Modal
+                          title="추가 결제"
+                          visible={showAddPayment}
+                          okText="추가 결제"
+                          cancelText="취소"
+                          onOk={addPaymentForm.submit}
+                          onCancel={() => setShowAddPayment(false)}
+                        >
+                          <Form
+                            layout="vertical"
+                            form={addPaymentForm}
+                            onFinish={onAddPayment}
+                            okText="추가"
+                            initialValues={{
+                              paymentType: 'SERVICE',
+                              amount: 1000,
+                              description: '관리자에 의해 결제되었습니다.',
+                            }}
+                          >
+                            <Row gutter={[4, 0]}>
+                              <Col>
+                                <Form.Item
+                                  name="paymentType"
+                                  label="결제 타입:"
+                                  required
+                                >
+                                  <Radio.Group>
+                                    <Radio.Button value="SERVICE">
+                                      서비스 금액
+                                    </Radio.Button>
+                                    <Radio.Button value="SURCHARGE">
+                                      추가 금액
+                                    </Radio.Button>
+                                  </Radio.Group>
+                                </Form.Item>
+                              </Col>
+
+                              <Col flex="auto">
+                                <Form.Item
+                                  name="amount"
+                                  label="금액:"
+                                  required
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: '반드시 금액을 입력해주세요.',
+                                    },
+                                    {
+                                      type: 'number',
+                                      min: 500,
+                                      message:
+                                        '500원 이상부터 결제가 가능합니다.',
+                                    },
+                                    {
+                                      type: 'number',
+                                      max: 1000000,
+                                      message:
+                                        '1,000,000원 금액을 초과할 수 없습니다.',
+                                    },
+                                  ]}
+                                >
+                                  <InputNumber
+                                    keyboard={false}
+                                    controls={false}
+                                    placeholder="결제 금액"
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            <Row justify="start" gutter={[4, 0]}>
+                              <Col flex="auto">
+                                <Form.Item
+                                  name="description"
+                                  label="결제 내용:"
+                                  required
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message:
+                                        '결제 내용을 반드시 입력해주세요.',
+                                    },
+                                  ]}
+                                >
+                                  <Input
+                                    placeholder="결제 내용을 입력하세요."
+                                    disabled={isLoading}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </Form>
+                        </Modal>
+                        <Popconfirm
+                          title="정말로 모두 환불하시겠습니까?"
+                          disabled={isLoading}
+                          onConfirm={() => refundRidePayment('')}
+                          okText="전체 환불"
+                          cancelText="취소"
+                        >
+                          <Button
+                            icon={<StopOutlined />}
+                            style={{ margin: 3 }}
+                            danger
+                          >
+                            환불
+                          </Button>
+                        </Popconfirm>
+                      </Col>
+                    </Row>
                     {ride.terminatedAt ? (
                       <Tabs
                         defaultActiveKey="receipt"
