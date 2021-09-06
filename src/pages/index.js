@@ -13,3 +13,4 @@ export * from './Users';
 export * from './UsersDetails';
 export * from './Webhooks';
 export * from './WebhooksDetails';
+export * from './DiscountGroupDetails';

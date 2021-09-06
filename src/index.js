@@ -6,6 +6,7 @@ import './index.css';
 import {
   AccessKeys,
   AccessKeysDetails,
+  DiscountGroupDetails,
   Login,
   Logs,
   Main,
@@ -70,6 +71,9 @@ ReactDOM.render(
                 </Route>
                 <Route path="/dashboard/webhooks/:requestId">
                   <WebhooksDetails />
+                </Route>
+                <Route path="/dashboard/discountGroups/:discountGroupId">
+                  <DiscountGroupDetails />
                 </Route>
                 <Route path="/dashboard/logs">
                   <Logs />
