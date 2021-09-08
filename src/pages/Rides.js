@@ -1,7 +1,22 @@
 import { ApiOutlined } from '@ant-design/icons';
-import { Badge, Button, Card, Col, Input, Row, Table, Typography } from 'antd';
+import {
+  Badge,
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Table,
+  Typography,
+} from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { Marker, NaverMap } from 'react-naver-maps';
 import { Link, withRouter } from 'react-router-dom';
 import { Client } from '../tools';
 
@@ -11,10 +26,17 @@ const { Search } = Input;
 export const Rides = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const [showStartForm, setShowStartForm] = useState(false);
+  const [startLocation, setStartLocation] = useState({
+    lat: 37.505293790833925,
+    lng: 127.05486238002776,
+  });
+
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
+  const startForm = useForm()[0];
 
   const columns = [
     {
@@ -110,6 +132,34 @@ export const Rides = withRouter(({ history }) => {
     requestRides();
   };
 
+  const onStartRide = ({
+    kickboardCode,
+    discountId,
+    userId,
+    realname,
+    phone,
+    birthday,
+  }) => {
+    setLoading(true);
+    if (!discountId) discountId = undefined;
+    const body = {
+      kickboardCode,
+      discountId,
+      userId,
+      realname,
+      phone,
+      latitude: startLocation._lat,
+      longitude: startLocation._lng,
+      birthday: birthday.format('YYYY-MM-DD'),
+    };
+
+    Client.post(`/ride/rides`, body).then(({ data }) => {
+      setLoading(false);
+      setShowStartForm(false);
+      requestRides();
+    });
+  };
+
   useEffect(requestRides, [search, skip, take]);
   return (
     <>
@@ -129,15 +179,174 @@ export const Rides = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/dashboard/rides/add">
-                  <Button
-                    icon={<ApiOutlined />}
-                    type="primary"
-                    disabled={isLoading}
+                <Button
+                  icon={<ApiOutlined />}
+                  onClick={() => setShowStartForm(true)}
+                  type="primary"
+                  disabled={isLoading}
+                >
+                  라이드 시작
+                </Button>
+                {showStartForm && (
+                  <Modal
+                    title="라이드 시작"
+                    visible={showStartForm}
+                    okType="primary"
+                    okText="라이드 시작"
+                    cancelText="취소"
+                    onOk={startForm.submit}
+                    onCancel={() => setShowStartForm(false)}
                   >
-                    라이드 시작
-                  </Button>
-                </Link>
+                    <Form
+                      layout="vertical"
+                      form={startForm}
+                      onFinish={onStartRide}
+                    >
+                      <Row gutter={[4, 4]}>
+                        <Col span={24}>
+                          <NaverMap
+                            id="terminate-location"
+                            style={{
+                              width: '100%',
+                              height: '300px',
+                            }}
+                            defaultZoom={13}
+                            center={startLocation}
+                            onCenterChanged={setStartLocation}
+                          >
+                            <Marker position={startLocation} />
+                          </NaverMap>
+                        </Col>
+                        <Col span={8}>
+                          <Form.Item
+                            label="킥보드 코드:"
+                            name="kickboardCode"
+                            required
+                            rules={[
+                              {
+                                required: true,
+                                message: '킥보드 코드를 반드시 입력해주세요.',
+                              },
+                              {
+                                len: 6,
+                                message: '올바른 킥보드 코드를 입력해주세요.',
+                              },
+                            ]}
+                          >
+                            <Input
+                              disabled={isLoading}
+                              placeholder="ex. DE20KP"
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={16}>
+                          <Form.Item
+                            label="사용자 ID:"
+                            name="userId"
+                            required
+                            rules={[
+                              {
+                                required: true,
+                                message: '사용자 ID를 반드시 입력해주세요.',
+                              },
+                            ]}
+                          >
+                            <Input
+                              disabled={isLoading}
+                              placeholder="플랫폼 사에서 사용하는 사용자 ID를 입력해주세요."
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={24}>
+                          <Form.Item
+                            label="디스카운트 ID:"
+                            name="discountId"
+                            rules={[
+                              {
+                                pattern:
+                                  /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
+                                message: '올바른 디스카운트 ID를 입력해주세요.',
+                              },
+                            ]}
+                          >
+                            <Input
+                              disabled={isLoading}
+                              placeholder="디스카운트 ID를 입력해주세요."
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={24}>
+                          <Form.Item
+                            label="이름:"
+                            name="realname"
+                            required
+                            rules={[
+                              {
+                                min: 2,
+                                message:
+                                  '이름은 반드시 2자리 이상이여야 합니다.',
+                              },
+                            ]}
+                          >
+                            <Input
+                              disabled={isLoading}
+                              placeholder="보험 처리를 위한 이름을 입력해주세요."
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={16}>
+                          <Form.Item
+                            label="전화번호:"
+                            name="phone"
+                            required
+                            rules={[
+                              {
+                                required: true,
+                                message: '전화번호를 반드시 입력해주세요.',
+                              },
+                              {
+                                pattern: /^\+(\d*)$/,
+                                message:
+                                  '+로 시작하는 전화번호를 입력해주세요.',
+                              },
+                            ]}
+                          >
+                            <Input
+                              disabled={isLoading}
+                              placeholder="보험 처리를 위한 전화번호를 입력해주세요."
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={8}>
+                          <Form.Item
+                            name="birthday"
+                            label="생년월일:"
+                            placeholder="보험 처리를 위한 생년월일을 입력해주세요."
+                            required
+                            rules={[
+                              {
+                                required: true,
+                                message: '생년월일을 반드시 입력해주세요.',
+                              },
+                            ]}
+                          >
+                            <DatePicker
+                              format="YYYY-MM-DD"
+                              placeholder="생년월일"
+                              defaultPickerValue={moment('2000-01-01')}
+                              disabled={isLoading}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Modal>
+                )}
               </Col>
             </Row>
           </Col>

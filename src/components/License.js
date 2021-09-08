@@ -65,7 +65,7 @@ export const License = () => {
               ]}
             >
               <DatePicker
-                format="YYYY년 MM월 DD일"
+                format="YYYY-MM-DD"
                 placeholder="생일을 입력하세요."
                 defaultPickerValue={moment('2000-01-01')}
                 disabled={isLoading}
