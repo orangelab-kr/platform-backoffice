@@ -23,7 +23,7 @@ import {
 } from './pages';
 
 export const baseURL = 'https://openapi.staging.hikick.kr/v1';
-// export const baseURL = "http://localhost/v1";
+// export const baseURL = 'http://localhost:3000/v1';
 
 ReactDOM.render(
   <div className="App">

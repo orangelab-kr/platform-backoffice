@@ -10,19 +10,19 @@ import {
   Table,
   Typography,
   message,
-} from "antd";
+} from 'antd';
 import {
   CopyOutlined,
   UserAddOutlined,
   ZoomInOutlined,
-} from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+} from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
 
-import { Client } from "../tools";
-import { Link } from "react-router-dom";
-import clipboard from "copy-to-clipboard";
-import dayjs from "dayjs";
-import { withRouter } from "react-router-dom";
+import { Client } from '../tools';
+import { Link } from 'react-router-dom';
+import clipboard from 'copy-to-clipboard';
+import dayjs from 'dayjs';
+import { withRouter } from 'react-router-dom';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -31,7 +31,7 @@ const { Paragraph } = Typography;
 export const AccessKeys = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
@@ -39,15 +39,15 @@ export const AccessKeys = withRouter(({ history }) => {
   const copyKey = (value) => {
     return () => {
       clipboard(value);
-      message.success("복사되었습니다.");
+      message.success('복사되었습니다.');
     };
   };
 
   const openKey = (value) => {
     return () => {
       Modal.info({
-        title: "시크릿 키",
-        okText: "확인",
+        title: '시크릿 키',
+        okText: '확인',
         content: (
           <Paragraph onClick={copyKey(value)} style={{ margin: 0 }}>
             <Row gutter={[0, 8]}>
@@ -80,8 +80,8 @@ export const AccessKeys = withRouter(({ history }) => {
 
   const columns = [
     {
-      title: "활성화",
-      dataIndex: "isEnabled",
+      title: '활성화',
+      dataIndex: 'isEnabled',
       render: (isEnabled, accessKey) => (
         <Checkbox
           checked={isEnabled}
@@ -91,8 +91,8 @@ export const AccessKeys = withRouter(({ history }) => {
       ),
     },
     {
-      title: "이름",
-      dataIndex: "name",
+      title: '이름',
+      dataIndex: 'name',
       render: (value, row) => (
         <Link to={`/dashboard/accessKeys/${row.platformAccessKeyId}`}>
           {value}
@@ -100,8 +100,8 @@ export const AccessKeys = withRouter(({ history }) => {
       ),
     },
     {
-      title: "액세스 키",
-      dataIndex: "platformAccessKeyId",
+      title: '액세스 키',
+      dataIndex: 'platformAccessKeyId',
       render: (value) => (
         <Paragraph onClick={copyKey(value)} style={{ margin: 0 }}>
           <Row gutter={[8, 8]} align="middle">
@@ -113,8 +113,8 @@ export const AccessKeys = withRouter(({ history }) => {
       ),
     },
     {
-      title: "시크릿 키",
-      dataIndex: "platformSecretAccessKey",
+      title: '시크릿 키',
+      dataIndex: 'platformSecretAccessKey',
       render: (value) => (
         <Row gutter={[8, 8]}>
           <Col>
@@ -136,8 +136,8 @@ export const AccessKeys = withRouter(({ history }) => {
       ),
     },
     {
-      title: "권한 그룹",
-      dataIndex: "permissionGroup",
+      title: '권한 그룹',
+      dataIndex: 'permissionGroup',
       render: (permissionGroup) => (
         <Link
           to={`/dashboard/permissionGroups/${permissionGroup.permissionGroupId}`}
@@ -147,9 +147,9 @@ export const AccessKeys = withRouter(({ history }) => {
       ),
     },
     {
-      title: "생성 일자",
-      dataIndex: "createdAt",
-      render: (createdAt) => dayjs(createdAt).format("YYYY년 MM월 DD일"),
+      title: '생성 일자',
+      dataIndex: 'createdAt',
+      render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
     },
   ];
 
@@ -161,7 +161,7 @@ export const AccessKeys = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/platform/accessKeys", { params }).then((res) => {
+    Client.get('/platform/accessKeys', { params }).then((res) => {
       const { platformAccessKeys, total } = res.data;
       setDataSource(platformAccessKeys);
       setTotal(total);
@@ -217,7 +217,7 @@ export const AccessKeys = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="platformAccessKeyId"
           loading={isLoading}
-          scroll={{ x: "100%" }}
+          scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,

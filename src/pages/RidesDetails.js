@@ -10,6 +10,7 @@ import {
   Input,
   InputNumber,
   List,
+  message,
   Modal,
   Popconfirm,
   Radio,
@@ -29,14 +30,23 @@ import {
   RenderAfterNavermapsLoaded,
 } from 'react-naver-maps';
 import { useParams, withRouter } from 'react-router-dom';
-import { Client, useInterval } from '../tools';
+import { Client, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
   const [ridePayments, setRidePayments] = useState([]);
   const [timeline, setTimeline] = useState([]);
   const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showTerminate, setShowTerminate] = useState(false);
+  const [terminateReceipt, setTerminateReceipt] = useState(null);
+  const [terminateLocation, setTerminateLocation] = useState({
+    _lat: 0,
+    _lng: 0,
+  });
+
+  const debouncedTerminateLocation = useDebounce(terminateLocation, 1000);
   const addPaymentForm = useForm()[0];
+  const terminateForm = useForm()[0];
   const params = useParams();
   const rideId = params.rideId !== 'add' ? params.rideId : '';
   const [isLoading, setLoading] = useState(false);
@@ -47,6 +57,12 @@ export const RidesDetails = withRouter(() => {
 
     Client.get(`/ride/rides/${rideId}`).then(({ data }) => {
       setRide(data.ride);
+
+      if (!showTerminate) {
+        const { latitude, longitude } = data.ride.startedKickboardLocation;
+        setTerminateLocation(new window.naver.maps.LatLng(latitude, longitude));
+      }
+
       setLoading(false);
     });
   };
@@ -98,7 +114,41 @@ export const RidesDetails = withRouter(() => {
     });
   };
 
-  useEffect(loadRide, [rideId]);
+  const calculateTerminatePricing = () => {
+    const { _lat: latitude, _lng: longitude } = debouncedTerminateLocation;
+    if (!latitude || !longitude) return;
+
+    setLoading(true);
+    Client.get(`/ride/rides/${rideId}/pricing`, {
+      params: { latitude, longitude },
+    }).then(({ data }) => {
+      setTerminateReceipt(data.pricing);
+      setLoading(false);
+    });
+  };
+
+  const onTerminate = () => {
+    setLoading(true);
+
+    if (!debouncedTerminateLocation || !terminateReceipt) {
+      message.warn('가격을 책정하고 있습니다. 책정이 완료된 후 시도해주세요.');
+    }
+
+    Client.delete(`/ride/rides/${rideId}`, {
+      params: {
+        latitude: debouncedTerminateLocation._lat,
+        longitude: debouncedTerminateLocation._lng,
+      },
+    }).then(() => {
+      loadRide();
+      setShowTerminate(false);
+      setLoading(false);
+    });
+  };
+
+  useEffect(loadRide, [showTerminate, rideId]);
+  useEffect(calculateTerminatePricing, [debouncedTerminateLocation, rideId]);
+
   useInterval(loadRide, ride && !ride.terminatedAt ? 5000 : null);
   return (
     <>
@@ -113,9 +163,201 @@ export const RidesDetails = withRouter(() => {
                   </Typography.Title>
                 </Col>
                 <Col>
-                  <Button>asdasd</Button>
-                  <Button>asdasd</Button>
-                  <Button>asdasd</Button>
+                  {ride && !ride.terminatedAt && (
+                    <>
+                      <Button
+                        icon={<StopOutlined />}
+                        loading={isLoading}
+                        onClick={() => setShowTerminate(true)}
+                        danger
+                      >
+                        라이드 종료
+                      </Button>
+
+                      <Modal
+                        title="라이드 종료"
+                        visible={showTerminate}
+                        okType="danger"
+                        okText="라이드 종료"
+                        cancelText="취소"
+                        onOk={terminateForm.submit}
+                        onCancel={() => setShowTerminate(false)}
+                      >
+                        <Form
+                          layout="vertical"
+                          form={terminateForm}
+                          onFinish={onTerminate}
+                          initialValues={{
+                            terminatedType: 'ADMIN_REQUESTED',
+                          }}
+                        >
+                          <Row gutter={[4, 4]}>
+                            <Col span={24}>
+                              {ride && (
+                                <NaverMap
+                                  id="terminate-location"
+                                  style={{
+                                    width: '100%',
+                                    height: '300px',
+                                  }}
+                                  defaultZoom={13}
+                                  center={terminateLocation}
+                                  onCenterChanged={setTerminateLocation}
+                                >
+                                  <Marker position={terminateLocation} />
+                                </NaverMap>
+                              )}
+                            </Col>
+                            <Col span={24}>
+                              <Descriptions bordered size="small">
+                                {terminateReceipt ? (
+                                  <>
+                                    <Descriptions.Item
+                                      label="심야 요금"
+                                      span={3}
+                                    >
+                                      {terminateReceipt.isNightly
+                                        ? '적용 됨'
+                                        : '적용 안됨'}
+                                    </Descriptions.Item>
+
+                                    {terminateReceipt.standard.price !== 0 && (
+                                      <Descriptions.Item
+                                        label="기본요금 결제 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.standard.price.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.standard.discount !==
+                                      0 && (
+                                      <Descriptions.Item
+                                        label="기본요금 할인 금액"
+                                        span={3}
+                                      >
+                                        -
+                                        {terminateReceipt.standard.discount.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.standard.total !== 0 && (
+                                      <Descriptions.Item
+                                        label="기본요금 최종 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.standard.total.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.perMinute.price !== 0 && (
+                                      <Descriptions.Item
+                                        label="분당요금 결제 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.perMinute.price.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.perMinute.discount !==
+                                      0 && (
+                                      <Descriptions.Item
+                                        label="분당요금 할인 금액"
+                                        span={3}
+                                      >
+                                        -
+                                        {terminateReceipt.perMinute.discount.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.perMinute.total !== 0 && (
+                                      <Descriptions.Item
+                                        label="분당요금 최종 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.perMinute.total.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.surcharge.price !== 0 && (
+                                      <Descriptions.Item
+                                        label="추가요금 결제 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.surcharge.price.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.surcharge.discount !==
+                                      0 && (
+                                      <Descriptions.Item
+                                        label="추가요금 할인 금액"
+                                        span={3}
+                                      >
+                                        -
+                                        {terminateReceipt.surcharge.discount.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.surcharge.total !== 0 && (
+                                      <Descriptions.Item
+                                        label="추가요금 최종 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.surcharge.total.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.total !== 0 && (
+                                      <Descriptions.Item
+                                        label="전체 결제 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.price.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    {terminateReceipt.discount !== 0 && (
+                                      <Descriptions.Item
+                                        label="전체 할인 금액"
+                                        span={3}
+                                      >
+                                        -
+                                        {terminateReceipt.discount.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    )}
+
+                                    <Descriptions.Item
+                                      label="최종 금액"
+                                      span={3}
+                                    >
+                                      {terminateReceipt.total.toLocaleString()}
+                                      원
+                                    </Descriptions.Item>
+                                  </>
+                                ) : (
+                                  <Descriptions.Item>
+                                    가격을 측정하는 중...
+                                  </Descriptions.Item>
+                                )}
+                              </Descriptions>
+                            </Col>
+                          </Row>
+                        </Form>
+                      </Modal>
+                    </>
+                  )}
                 </Col>
               </Row>
             </Col>
@@ -290,123 +532,124 @@ export const RidesDetails = withRouter(() => {
                       <Col>
                         <Typography.Title level={4}>결제 정보</Typography.Title>
                       </Col>
-                      <Col>
-                        <Button
-                          style={{ margin: 3 }}
-                          icon={<PlusOutlined />}
-                          onClick={() => setShowAddPayment(true)}
-                        >
-                          추가 결제
-                        </Button>
-                        <Modal
-                          title="추가 결제"
-                          visible={showAddPayment}
-                          okText="추가 결제"
-                          cancelText="취소"
-                          onOk={addPaymentForm.submit}
-                          onCancel={() => setShowAddPayment(false)}
-                        >
-                          <Form
-                            layout="vertical"
-                            form={addPaymentForm}
-                            onFinish={onAddPayment}
-                            okText="추가"
-                            initialValues={{
-                              paymentType: 'SERVICE',
-                              amount: 1000,
-                              description: '관리자에 의해 결제되었습니다.',
-                            }}
-                          >
-                            <Row gutter={[4, 0]}>
-                              <Col>
-                                <Form.Item
-                                  name="paymentType"
-                                  label="결제 타입:"
-                                  required
-                                >
-                                  <Radio.Group>
-                                    <Radio.Button value="SERVICE">
-                                      서비스 금액
-                                    </Radio.Button>
-                                    <Radio.Button value="SURCHARGE">
-                                      추가 금액
-                                    </Radio.Button>
-                                  </Radio.Group>
-                                </Form.Item>
-                              </Col>
-
-                              <Col flex="auto">
-                                <Form.Item
-                                  name="amount"
-                                  label="금액:"
-                                  required
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: '반드시 금액을 입력해주세요.',
-                                    },
-                                    {
-                                      type: 'number',
-                                      min: 500,
-                                      message:
-                                        '500원 이상부터 결제가 가능합니다.',
-                                    },
-                                    {
-                                      type: 'number',
-                                      max: 1000000,
-                                      message:
-                                        '1,000,000원 금액을 초과할 수 없습니다.',
-                                    },
-                                  ]}
-                                >
-                                  <InputNumber
-                                    keyboard={false}
-                                    controls={false}
-                                    placeholder="결제 금액"
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-
-                            <Row justify="start" gutter={[4, 0]}>
-                              <Col flex="auto">
-                                <Form.Item
-                                  name="description"
-                                  label="결제 내용:"
-                                  required
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message:
-                                        '결제 내용을 반드시 입력해주세요.',
-                                    },
-                                  ]}
-                                >
-                                  <Input
-                                    placeholder="결제 내용을 입력하세요."
-                                    disabled={isLoading}
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </Form>
-                        </Modal>
-                        <Popconfirm
-                          title="정말로 모두 환불하시겠습니까?"
-                          disabled={isLoading}
-                          onConfirm={() => refundRidePayment('')}
-                          okText="전체 환불"
-                          cancelText="취소"
-                        >
+                      {ride.terminatedAt && (
+                        <Col>
                           <Button
-                            icon={<StopOutlined />}
                             style={{ margin: 3 }}
-                            danger
+                            icon={<PlusOutlined />}
+                            onClick={() => setShowAddPayment(true)}
                           >
-                            환불
+                            추가 결제
                           </Button>
-                        </Popconfirm>
-                      </Col>
+                          <Modal
+                            title="추가 결제"
+                            visible={showAddPayment}
+                            okText="추가 결제"
+                            cancelText="취소"
+                            onOk={addPaymentForm.submit}
+                            onCancel={() => setShowAddPayment(false)}
+                          >
+                            <Form
+                              layout="vertical"
+                              form={addPaymentForm}
+                              onFinish={onAddPayment}
+                              initialValues={{
+                                paymentType: 'SERVICE',
+                                amount: 1000,
+                                description: '관리자에 의해 결제되었습니다.',
+                              }}
+                            >
+                              <Row gutter={[4, 0]}>
+                                <Col>
+                                  <Form.Item
+                                    name="paymentType"
+                                    label="결제 타입:"
+                                    required
+                                  >
+                                    <Radio.Group>
+                                      <Radio.Button value="SERVICE">
+                                        서비스 금액
+                                      </Radio.Button>
+                                      <Radio.Button value="SURCHARGE">
+                                        추가 금액
+                                      </Radio.Button>
+                                    </Radio.Group>
+                                  </Form.Item>
+                                </Col>
+
+                                <Col flex="auto">
+                                  <Form.Item
+                                    name="amount"
+                                    label="금액:"
+                                    required
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: '반드시 금액을 입력해주세요.',
+                                      },
+                                      {
+                                        type: 'number',
+                                        min: 500,
+                                        message:
+                                          '500원 이상부터 결제가 가능합니다.',
+                                      },
+                                      {
+                                        type: 'number',
+                                        max: 1000000,
+                                        message:
+                                          '1,000,000원 금액을 초과할 수 없습니다.',
+                                      },
+                                    ]}
+                                  >
+                                    <InputNumber
+                                      keyboard={false}
+                                      controls={false}
+                                      placeholder="결제 금액"
+                                    />
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+
+                              <Row justify="start" gutter={[4, 0]}>
+                                <Col flex="auto">
+                                  <Form.Item
+                                    name="description"
+                                    label="결제 내용:"
+                                    required
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message:
+                                          '결제 내용을 반드시 입력해주세요.',
+                                      },
+                                    ]}
+                                  >
+                                    <Input
+                                      placeholder="결제 내용을 입력하세요."
+                                      disabled={isLoading}
+                                    />
+                                  </Form.Item>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Modal>
+                          <Popconfirm
+                            title="정말로 모두 환불하시겠습니까?"
+                            disabled={isLoading}
+                            onConfirm={() => refundRidePayment('')}
+                            okText="전체 환불"
+                            cancelText="취소"
+                          >
+                            <Button
+                              icon={<StopOutlined />}
+                              style={{ margin: 3 }}
+                              danger
+                            >
+                              환불
+                            </Button>
+                          </Popconfirm>
+                        </Col>
+                      )}
                     </Row>
                     {ride.terminatedAt ? (
                       <Tabs

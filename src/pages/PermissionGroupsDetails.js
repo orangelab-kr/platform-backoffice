@@ -24,6 +24,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
   const [permissionGroup, setPermissionGroup] = useState({
     name: "로딩 중...",
   });
+  
   const params = useParams();
   const permissionGroupId =
     params.permissionGroupId !== "add" ? params.permissionGroupId : "";
