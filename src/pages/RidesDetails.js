@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Card,
+  Checkbox,
   Col,
   Descriptions,
   Form,
@@ -39,6 +40,8 @@ export const RidesDetails = withRouter(() => {
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showTerminate, setShowTerminate] = useState(false);
   const [terminateReceipt, setTerminateReceipt] = useState(null);
+  const [lightsOn, setLightsOn] = useState(false);
+  const [lockOn, setLockOn] = useState(false);
   const [terminateLocation, setTerminateLocation] = useState({
     _lat: 0,
     _lng: 0,
@@ -132,6 +135,7 @@ export const RidesDetails = withRouter(() => {
 
     if (!debouncedTerminateLocation || !terminateReceipt) {
       message.warn('가격을 책정하고 있습니다. 책정이 완료된 후 시도해주세요.');
+      return;
     }
 
     Client.delete(`/ride/rides/${rideId}`, {
@@ -146,10 +150,30 @@ export const RidesDetails = withRouter(() => {
     });
   };
 
+  const onLights = () => {
+    setLoading(true);
+
+    const action = !lightsOn ? 'on' : 'off';
+    Client.get(`/ride/rides/${rideId}/lights/${action}`).then(() => {
+      setLightsOn(!lightsOn);
+      setLoading(false);
+    });
+  };
+
+  const onLock = () => {
+    setLoading(true);
+
+    const action = !lockOn ? 'on' : 'off';
+    Client.get(`/ride/rides/${rideId}/lock/${action}`).then(() => {
+      setLockOn(!lockOn);
+      setLoading(false);
+    });
+  };
+
   useEffect(loadRide, [showTerminate, rideId]);
   useEffect(calculateTerminatePricing, [debouncedTerminateLocation, rideId]);
 
-  useInterval(loadRide, ride && !ride.terminatedAt ? 5000 : null);
+  useInterval(loadRide, ride && !ride.terminatedAt ? 10000 : null);
   return (
     <>
       <RenderAfterNavermapsLoaded ncpClientId="nd1nqudj4x">
@@ -162,203 +186,230 @@ export const RidesDetails = withRouter(() => {
                     {ride ? ride.rideId : '로딩 중...'}
                   </Typography.Title>
                 </Col>
-                <Col>
-                  {ride && !ride.terminatedAt && (
-                    <>
-                      <Button
-                        icon={<StopOutlined />}
-                        loading={isLoading}
-                        onClick={() => setShowTerminate(true)}
-                        danger
-                      >
-                        라이드 종료
-                      </Button>
 
-                      <Modal
-                        title="라이드 종료"
-                        visible={showTerminate}
-                        okType="danger"
-                        okText="라이드 종료"
-                        cancelText="취소"
-                        onOk={terminateForm.submit}
-                        onCancel={() => setShowTerminate(false)}
-                      >
-                        <Form
-                          layout="vertical"
-                          form={terminateForm}
-                          onFinish={onTerminate}
-                          initialValues={{
-                            terminatedType: 'ADMIN_REQUESTED',
-                          }}
+                {ride && !ride.terminatedAt && (
+                  <Col>
+                    <Row gutter={[4, 0]} align="middle">
+                      <Col>
+                        <Checkbox
+                          checked={lightsOn}
+                          onChange={onLights}
+                          disabled={isLoading}
                         >
-                          <Row gutter={[4, 4]}>
-                            <Col span={24}>
-                              {ride && (
-                                <NaverMap
-                                  id="terminate-location"
-                                  style={{
-                                    width: '100%',
-                                    height: '300px',
-                                  }}
-                                  defaultZoom={13}
-                                  center={terminateLocation}
-                                  onCenterChanged={setTerminateLocation}
-                                >
-                                  <Marker position={terminateLocation} />
-                                </NaverMap>
-                              )}
-                            </Col>
-                            <Col span={24}>
-                              <Descriptions bordered size="small">
-                                {terminateReceipt ? (
-                                  <>
-                                    <Descriptions.Item
-                                      label="심야 요금"
-                                      span={3}
-                                    >
-                                      {terminateReceipt.isNightly
-                                        ? '적용 됨'
-                                        : '적용 안됨'}
-                                    </Descriptions.Item>
+                          라이트
+                        </Checkbox>
+                      </Col>
+                      <Col>
+                        <Checkbox
+                          checked={lockOn}
+                          onChange={onLock}
+                          disabled={isLoading}
+                        >
+                          일시정지
+                        </Checkbox>
+                      </Col>
+                      <Col>
+                        <Button
+                          icon={<StopOutlined />}
+                          disabled={isLoading}
+                          onClick={() => setShowTerminate(true)}
+                          danger
+                        >
+                          라이드 종료
+                        </Button>
 
-                                    {terminateReceipt.standard.price !== 0 && (
-                                      <Descriptions.Item
-                                        label="기본요금 결제 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.standard.price.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.standard.discount !==
-                                      0 && (
-                                      <Descriptions.Item
-                                        label="기본요금 할인 금액"
-                                        span={3}
-                                      >
-                                        -
-                                        {terminateReceipt.standard.discount.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.standard.total !== 0 && (
-                                      <Descriptions.Item
-                                        label="기본요금 최종 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.standard.total.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.perMinute.price !== 0 && (
-                                      <Descriptions.Item
-                                        label="분당요금 결제 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.perMinute.price.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.perMinute.discount !==
-                                      0 && (
-                                      <Descriptions.Item
-                                        label="분당요금 할인 금액"
-                                        span={3}
-                                      >
-                                        -
-                                        {terminateReceipt.perMinute.discount.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.perMinute.total !== 0 && (
-                                      <Descriptions.Item
-                                        label="분당요금 최종 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.perMinute.total.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.surcharge.price !== 0 && (
-                                      <Descriptions.Item
-                                        label="추가요금 결제 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.surcharge.price.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.surcharge.discount !==
-                                      0 && (
-                                      <Descriptions.Item
-                                        label="추가요금 할인 금액"
-                                        span={3}
-                                      >
-                                        -
-                                        {terminateReceipt.surcharge.discount.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.surcharge.total !== 0 && (
-                                      <Descriptions.Item
-                                        label="추가요금 최종 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.surcharge.total.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.total !== 0 && (
-                                      <Descriptions.Item
-                                        label="전체 결제 금액"
-                                        span={3}
-                                      >
-                                        {terminateReceipt.price.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    {terminateReceipt.discount !== 0 && (
-                                      <Descriptions.Item
-                                        label="전체 할인 금액"
-                                        span={3}
-                                      >
-                                        -
-                                        {terminateReceipt.discount.toLocaleString()}
-                                        원
-                                      </Descriptions.Item>
-                                    )}
-
-                                    <Descriptions.Item
-                                      label="최종 금액"
-                                      span={3}
-                                    >
-                                      {terminateReceipt.total.toLocaleString()}
-                                      원
-                                    </Descriptions.Item>
-                                  </>
-                                ) : (
-                                  <Descriptions.Item>
-                                    가격을 측정하는 중...
-                                  </Descriptions.Item>
+                        <Modal
+                          title="라이드 종료"
+                          visible={showTerminate}
+                          okType="danger"
+                          okText="라이드 종료"
+                          cancelText="취소"
+                          onOk={terminateForm.submit}
+                          onCancel={() => setShowTerminate(false)}
+                        >
+                          <Form
+                            layout="vertical"
+                            form={terminateForm}
+                            onFinish={onTerminate}
+                            initialValues={{
+                              terminatedType: 'ADMIN_REQUESTED',
+                            }}
+                          >
+                            <Row gutter={[4, 4]}>
+                              <Col span={24}>
+                                {ride && (
+                                  <NaverMap
+                                    id="terminate-location"
+                                    style={{
+                                      width: '100%',
+                                      height: '300px',
+                                    }}
+                                    defaultZoom={13}
+                                    center={terminateLocation}
+                                    onCenterChanged={setTerminateLocation}
+                                  >
+                                    <Marker position={terminateLocation} />
+                                  </NaverMap>
                                 )}
-                              </Descriptions>
-                            </Col>
-                          </Row>
-                        </Form>
-                      </Modal>
-                    </>
-                  )}
-                </Col>
+                              </Col>
+                              <Col span={24}>
+                                <Descriptions bordered size="small">
+                                  {terminateReceipt ? (
+                                    <>
+                                      <Descriptions.Item
+                                        label="심야 요금"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.isNightly
+                                          ? '적용 됨'
+                                          : '적용 안됨'}
+                                      </Descriptions.Item>
+
+                                      {terminateReceipt.standard.price !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="기본요금 결제 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.standard.price.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.standard.discount !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="기본요금 할인 금액"
+                                          span={3}
+                                        >
+                                          -
+                                          {terminateReceipt.standard.discount.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.standard.total !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="기본요금 최종 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.standard.total.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.perMinute.price !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="분당요금 결제 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.perMinute.price.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.perMinute.discount !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="분당요금 할인 금액"
+                                          span={3}
+                                        >
+                                          -
+                                          {terminateReceipt.perMinute.discount.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.perMinute.total !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="분당요금 최종 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.perMinute.total.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.surcharge.price !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="추가요금 결제 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.surcharge.price.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.surcharge.discount !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="추가요금 할인 금액"
+                                          span={3}
+                                        >
+                                          -
+                                          {terminateReceipt.surcharge.discount.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.surcharge.total !==
+                                        0 && (
+                                        <Descriptions.Item
+                                          label="추가요금 최종 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.surcharge.total.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.total !== 0 && (
+                                        <Descriptions.Item
+                                          label="전체 결제 금액"
+                                          span={3}
+                                        >
+                                          {terminateReceipt.price.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      {terminateReceipt.discount !== 0 && (
+                                        <Descriptions.Item
+                                          label="전체 할인 금액"
+                                          span={3}
+                                        >
+                                          -
+                                          {terminateReceipt.discount.toLocaleString()}
+                                          원
+                                        </Descriptions.Item>
+                                      )}
+
+                                      <Descriptions.Item
+                                        label="최종 금액"
+                                        span={3}
+                                      >
+                                        {terminateReceipt.total.toLocaleString()}
+                                        원
+                                      </Descriptions.Item>
+                                    </>
+                                  ) : (
+                                    <Descriptions.Item>
+                                      가격을 측정하는 중...
+                                    </Descriptions.Item>
+                                  )}
+                                </Descriptions>
+                              </Col>
+                            </Row>
+                          </Form>
+                        </Modal>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             {ride && (

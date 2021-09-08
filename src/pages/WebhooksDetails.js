@@ -92,10 +92,10 @@ export const WebhooksDetails = withRouter(({ history }) => {
 
   useEffect(loadRequest, [requestId]);
   useEffect(loadRequestHistories, [requestId]);
-  useInterval(loadRequest, request && !request.completedAt ? 5000 : null);
+  useInterval(loadRequest, request && !request.completedAt ? 10000 : null);
   useInterval(
     loadRequestHistories,
-    request && !request.completedAt ? 5000 : null
+    request && !request.completedAt ? 10000 : null
   );
 
   return (
