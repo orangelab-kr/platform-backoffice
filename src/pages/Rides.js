@@ -81,9 +81,9 @@ export const Rides = withRouter(({ history }) => {
         terminatedAt ? `${price.toLocaleString()}원` : '',
     },
     {
-      title: '쿠폰',
+      title: '디스카운트',
       dataIndex: 'discountId',
-      render: (discountId) => (discountId ? '쿠폰 사용됨' : '사용하지 않음'),
+      render: (discountId) => (discountId ? '사용됨' : '사용하지 않음'),
     },
     {
       title: '종료 방식',
@@ -134,6 +134,7 @@ export const Rides = withRouter(({ history }) => {
 
   const onStartRide = ({
     kickboardCode,
+    discountGroupId,
     discountId,
     userId,
     realname,
@@ -141,9 +142,14 @@ export const Rides = withRouter(({ history }) => {
     birthday,
   }) => {
     setLoading(true);
-    if (!discountId) discountId = undefined;
+    if (!discountGroupId || !discountId) {
+      discountGroupId = undefined;
+      discountId = undefined;
+    }
+
     const body = {
       kickboardCode,
+      discountGroupId,
       discountId,
       userId,
       realname,
@@ -255,6 +261,26 @@ export const Rides = withRouter(({ history }) => {
                             <Input
                               disabled={isLoading}
                               placeholder="플랫폼 사에서 사용하는 사용자 ID를 입력해주세요."
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={24}>
+                          <Form.Item
+                            label="디스카운트 그룹 ID:"
+                            name="discountGroupId"
+                            rules={[
+                              {
+                                pattern:
+                                  /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
+                                message:
+                                  '올바른 디스카운트 그룹 ID를 입력해주세요.',
+                              },
+                            ]}
+                          >
+                            <Input
+                              disabled={isLoading}
+                              placeholder="디스카운트 그룹 ID를 입력해주세요."
                             />
                           </Form.Item>
                         </Col>

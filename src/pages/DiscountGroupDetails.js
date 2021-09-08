@@ -1,4 +1,9 @@
-import { PlusOutlined, StopOutlined } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  LockOutlined,
+  PlusOutlined,
+  StopOutlined,
+} from '@ant-design/icons';
 import {
   Card,
   Col,
@@ -39,9 +44,15 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
       title: '사용일자',
       dataIndex: 'usedAt',
       key: 'usedAt',
-      render: (usedAt, { discountId }) =>
+      render: (usedAt, { discountId, lockedAt }) =>
         usedAt ? (
-          dayjs(usedAt).format('YYYY년 MM월 DD일 H시 M분 s초')
+          <Button size="small" icon={<CheckCircleOutlined />} disabled>
+            사용 완료: {dayjs(usedAt).format('YYYY년 MM월 DD일 H시 M분 s초')}
+          </Button>
+        ) : lockedAt ? (
+          <Button size="small" icon={<LockOutlined />} disabled>
+            사용 중: {dayjs(lockedAt).format('YYYY년 MM월 DD일 H시 M분 s초')}
+          </Button>
         ) : (
           <Popconfirm
             title="정말로 취소하시겠습니까?"

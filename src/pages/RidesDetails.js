@@ -25,7 +25,7 @@ import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
-import { useParams, withRouter } from 'react-router-dom';
+import { Link, useParams, withRouter } from 'react-router-dom';
 import { Client, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
@@ -37,7 +37,7 @@ export const RidesDetails = withRouter(() => {
   const [terminateReceipt, setTerminateReceipt] = useState(null);
   const [lightsOn, setLightsOn] = useState(false);
   const [lockOn, setLockOn] = useState(false);
-  const [terminateLocation, setTerminateLocation] = useState({
+  const [terminateLocation, setTerminateLocationState] = useState({
     _lat: 0,
     _lng: 0,
   });
@@ -123,6 +123,11 @@ export const RidesDetails = withRouter(() => {
       setTerminateReceipt(data.pricing);
       setLoading(false);
     });
+  };
+
+  const setTerminateLocation = (location) => {
+    setTerminateReceipt(null);
+    setTerminateLocationState(location);
   };
 
   const onTerminate = () => {
@@ -493,7 +498,7 @@ export const RidesDetails = withRouter(() => {
                             '위치 정보 없음'
                           )}
                         </Descriptions.Item>
-                        <Descriptions.Item label="반납 사진" span={3}>
+                        <Descriptions.Item label="반납 사진" span={2}>
                           {!ride.terminatedAt ? (
                             '라이드 중...'
                           ) : ride.photo ? (
@@ -504,6 +509,17 @@ export const RidesDetails = withRouter(() => {
                             />
                           ) : (
                             '업로드 하지 않음'
+                          )}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="디스카운트 ID" span={1}>
+                          {!ride.discountGroupId || !ride.discountId ? (
+                            '적용 안함'
+                          ) : (
+                            <Link
+                              to={`/dashboard/discountGroups/${ride.discountGroupId}`}
+                            >
+                              {ride.discountId}
+                            </Link>
                           )}
                         </Descriptions.Item>
                       </Descriptions>
