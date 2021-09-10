@@ -23,8 +23,10 @@ import {
 } from './pages';
 import { RenderAfterNavermapsLoaded } from 'react-naver-maps';
 
-export const baseURL = 'https://openapi.staging.hikick.kr/v1';
-// export const baseURL = 'http://localhost:3000/v1';
+export const baseURL =
+  window.location.host === 'platform.hikick.kr'
+    ? 'https://openapi.hikick.kr/v1'
+    : 'https://openapi.staging.hikick.kr/v1';
 
 ReactDOM.render(
   <div className="App">

@@ -5,6 +5,7 @@ import {
   Card,
   Checkbox,
   Col,
+  DatePicker,
   Descriptions,
   Form,
   Image,
@@ -23,6 +24,7 @@ import {
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { Link, useParams, withRouter } from 'react-router-dom';
@@ -114,11 +116,17 @@ export const RidesDetails = withRouter(() => {
 
   const calculateTerminatePricing = () => {
     const { _lat: latitude, _lng: longitude } = debouncedTerminateLocation;
+    const terminatedAt =
+      terminateForm.getFieldValue('terminatedAt') || moment();
     if (!latitude || !longitude) return;
 
     setLoading(true);
     Client.get(`/ride/rides/${rideId}/pricing`, {
-      params: { latitude, longitude },
+      params: {
+        latitude: debouncedTerminateLocation._lat,
+        longitude: debouncedTerminateLocation._lng,
+        terminatedAt: terminatedAt.format(),
+      },
     }).then(({ data }) => {
       setTerminateReceipt(data.pricing);
       setLoading(false);
@@ -130,9 +138,8 @@ export const RidesDetails = withRouter(() => {
     setTerminateLocationState(location);
   };
 
-  const onTerminate = () => {
+  const onTerminate = ({ terminatedAt }) => {
     setLoading(true);
-
     if (!debouncedTerminateLocation || !terminateReceipt) {
       message.warn('가격을 책정하고 있습니다. 책정이 완료된 후 시도해주세요.');
       return;
@@ -142,6 +149,8 @@ export const RidesDetails = withRouter(() => {
       params: {
         latitude: debouncedTerminateLocation._lat,
         longitude: debouncedTerminateLocation._lng,
+        terminatedAt: terminatedAt.format(),
+        terminatedType: 'ADMIN_REQUESTED',
       },
     }).then(() => {
       loadRide();
@@ -171,7 +180,11 @@ export const RidesDetails = withRouter(() => {
   };
 
   useEffect(loadRide, [showTerminate, rideId]);
-  useEffect(calculateTerminatePricing, [debouncedTerminateLocation, rideId]);
+  useEffect(calculateTerminatePricing, [
+    debouncedTerminateLocation,
+    rideId,
+    terminateForm,
+  ]);
 
   useInterval(loadRide, ride && !ride.terminatedAt ? 10000 : null);
   return (
@@ -231,7 +244,7 @@ export const RidesDetails = withRouter(() => {
                           form={terminateForm}
                           onFinish={onTerminate}
                           initialValues={{
-                            terminatedType: 'ADMIN_REQUESTED',
+                            terminatedAt: moment(),
                           }}
                         >
                           <Row gutter={[4, 4]}>
@@ -250,6 +263,16 @@ export const RidesDetails = withRouter(() => {
                                   <Marker position={terminateLocation} />
                                 </NaverMap>
                               )}
+                            </Col>
+                            <Col span={24}>
+                              <Form.Item label="종료 시점:" name="terminatedAt">
+                                <DatePicker
+                                  showTime
+                                  style={{ width: '100%' }}
+                                  onChange={calculateTerminatePricing}
+                                  format="YYYY년 MM월 DD일 H시 m분 s초"
+                                />
+                              </Form.Item>
                             </Col>
                             <Col span={24}>
                               <Descriptions bordered size="small">
@@ -808,7 +831,9 @@ export const RidesDetails = withRouter(() => {
                                     copyable={true}
                                     delete={payment.refundedAt}
                                   >
-                                    {payment.amount.toLocaleString()}원
+                                    {`${payment.amount.toLocaleString()}원 / ${
+                                      payment.description || '설명 없음'
+                                    }`}
                                   </Typography.Title>
                                 </Col>
                                 <Col>
