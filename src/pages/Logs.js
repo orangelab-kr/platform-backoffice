@@ -53,7 +53,7 @@ export const Logs = () => {
       title: '발생 일자',
       dataIndex: 'createdAt',
       render: (createdAt) =>
-        dayjs(createdAt).format('YYYY년 MM월 DD일 H시 M분 s초'),
+        dayjs(createdAt).format('YYYY년 MM월 DD일 H시 m분 s초'),
     },
   ];
 

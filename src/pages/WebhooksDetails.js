@@ -63,7 +63,8 @@ export const WebhooksDetails = withRouter(({ history }) => {
       title: '요청일자',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
+      render: (createdAt) =>
+        dayjs(createdAt).format('YYYY년 MM월 DD일 H시 m분 s초'),
     },
   ];
 
