@@ -828,14 +828,26 @@ export const RidesDetails = withRouter(() => {
                               </Row>
                               <Row justify="space-between">
                                 <Col>
-                                  <Col>
-                                    <b>처리 시점: </b>
-                                    <Typography.Text copyable={true}>
-                                      {dayjs(ride.processedAt).format(
-                                        'M월 D일 H시 m분 s초'
-                                      )}
-                                    </Typography.Text>
-                                  </Col>
+                                  <Row>
+                                    <Col span={24}>
+                                      <b>요청 시점: </b>
+                                      <Typography.Text copyable={true}>
+                                        {dayjs(ride.createdAt).format(
+                                          'M월 D일 H시 m분 s초'
+                                        )}
+                                      </Typography.Text>
+                                    </Col>
+                                    <Col span={24}>
+                                      <b>처리 시점: </b>
+                                      <Typography.Text copyable={true}>
+                                        {ride.processedAt
+                                          ? dayjs(ride.processedAt).format(
+                                              'M월 D일 H시 m분 s초'
+                                            )
+                                          : '처리 되지 않음'}
+                                      </Typography.Text>
+                                    </Col>
+                                  </Row>
                                 </Col>
                                 <Col>
                                   <Popconfirm
