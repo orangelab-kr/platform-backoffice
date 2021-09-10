@@ -28,10 +28,9 @@ export const Rides = withRouter(({ history }) => {
   const [isLoading, setLoading] = useState(false);
   const [showStartForm, setShowStartForm] = useState(false);
   const [useDiscount, setUseDiscount] = useState(false);
-  const [startLocation, setStartLocation] = useState({
-    lat: 37.505293790833925,
-    lng: 127.05486238002776,
-  });
+  const [startLocation, setStartLocation] = useState(
+    new window.naver.maps.LatLng(37.505293790833925, 127.05486238002776)
+  );
 
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -373,7 +372,7 @@ export const Rides = withRouter(({ history }) => {
                             ]}
                           >
                             <DatePicker
-                              format="YYYY-MM-DD"
+                              format="YYYY/MM/DD"
                               placeholder="생년월일"
                               defaultPickerValue={moment('2000-01-01')}
                               disabled={isLoading}
