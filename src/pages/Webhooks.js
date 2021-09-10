@@ -9,7 +9,7 @@ import {
   message,
   Row,
   Table,
-  Typography
+  Typography,
 } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
@@ -76,11 +76,13 @@ export const Webhooks = withRouter(({ history }) => {
     });
   };
 
-  const saveWebhookSettings = async () => {
+  const saveWebhookSettings = async (settings) => {
     setLoading(true);
     await Promise.all([
       Object.keys(settings).map((type) =>
-        Client.post(`/webhook/settings/${type}`, { url: settings[type] || '' })
+        Client.post(`/webhook/settings/${type}`, {
+          url: settings[type] || '',
+        })
       ),
     ]);
 
