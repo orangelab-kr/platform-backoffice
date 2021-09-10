@@ -27,6 +27,7 @@ export const Rides = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [showStartForm, setShowStartForm] = useState(false);
+  const [useDiscount, setUseDiscount] = useState(false);
   const [startLocation, setStartLocation] = useState({
     lat: 37.505293790833925,
     lng: 127.05486238002776,
@@ -269,6 +270,9 @@ export const Rides = withRouter(({ history }) => {
                           <Form.Item
                             label="디스카운트 그룹 ID:"
                             name="discountGroupId"
+                            onChange={({ target }) =>
+                              setUseDiscount(!!target.value)
+                            }
                             rules={[
                               {
                                 pattern:
@@ -285,24 +289,31 @@ export const Rides = withRouter(({ history }) => {
                           </Form.Item>
                         </Col>
 
-                        <Col span={24}>
-                          <Form.Item
-                            label="디스카운트 ID:"
-                            name="discountId"
-                            rules={[
-                              {
-                                pattern:
-                                  /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
-                                message: '올바른 디스카운트 ID를 입력해주세요.',
-                              },
-                            ]}
-                          >
-                            <Input
-                              disabled={isLoading}
-                              placeholder="디스카운트 ID를 입력해주세요."
-                            />
-                          </Form.Item>
-                        </Col>
+                        {useDiscount && (
+                          <Col span={24}>
+                            <Form.Item
+                              label="디스카운트 ID:"
+                              name="discountId"
+                              rules={[
+                                {
+                                  required: true,
+                                  message: '디스카운트 ID는 필수입니다.',
+                                },
+                                {
+                                  pattern:
+                                    /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
+                                  message:
+                                    '올바른 디스카운트 ID를 입력해주세요.',
+                                },
+                              ]}
+                            >
+                              <Input
+                                disabled={isLoading}
+                                placeholder="디스카운트 ID를 입력해주세요."
+                              />
+                            </Form.Item>
+                          </Col>
+                        )}
 
                         <Col span={24}>
                           <Form.Item
