@@ -39,7 +39,7 @@ export const DiscountGroups = withRouter(({ history }) => {
     },
   ];
 
-  const requestUsers = () => {
+  const requestDiscountGroups = () => {
     setLoading(true);
     const params = {
       take,
@@ -59,15 +59,15 @@ export const DiscountGroups = withRouter(({ history }) => {
   const onPagnationChange = (page, pageSize) => {
     setTake(pageSize);
     setSkip(page * pageSize);
-    requestUsers();
+    requestDiscountGroups();
   };
 
   const onSearch = (search) => {
     setSearch(search);
-    requestUsers();
+    requestDiscountGroups();
   };
 
-  useEffect(requestUsers, [search, skip, take]);
+  useEffect(requestDiscountGroups, [search, skip, take]);
   return (
     <>
       <Card>

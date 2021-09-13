@@ -9,11 +9,13 @@ import {
   Input,
   Modal,
   Row,
+  Select,
   Table,
   Typography,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap } from 'react-naver-maps';
@@ -27,7 +29,9 @@ export const Rides = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [showStartForm, setShowStartForm] = useState(false);
-  const [useDiscount, setUseDiscount] = useState(false);
+  const [selectDiscountGroupId, setSelectDiscountGroupId] = useState(null);
+  const [discountGroups, setDiscountGroups] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
   const [startLocation, setStartLocation] = useState(
     new window.naver.maps.LatLng(37.505293790833925, 127.05486238002776)
   );
@@ -37,6 +41,33 @@ export const Rides = withRouter(({ history }) => {
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const startForm = useForm()[0];
+
+  const onSearchDiscountGroups = (search) => {
+    setLoading(true);
+    const params = { search };
+    Client.get('/discount/discountGroups', { params })
+      .finally(() => setLoading(false))
+      .then(({ data }) => setDiscountGroups(data.discountGroups));
+  };
+
+  const onSearchDiscountGroupsWithDebounce = _.debounce(
+    onSearchDiscountGroups,
+    500
+  );
+
+  const onChangeDiscountGroup = (discountGroupId) => {
+    setSelectDiscountGroupId(discountGroupId);
+    if (!discountGroupId) return;
+    onSearchDiscounts(discountGroupId, '');
+  };
+
+  const onSearchDiscounts = (discountGroupId, search) => {
+    setLoading(true);
+    const params = { search, take: 10 };
+    Client.get(`/discount/discountGroups/${discountGroupId}`, { params })
+      .finally(() => setLoading(false))
+      .then(({ data }) => setDiscounts(data.discounts));
+  };
 
   const columns = [
     {
@@ -169,6 +200,7 @@ export const Rides = withRouter(({ history }) => {
   };
 
   useEffect(requestRides, [search, skip, take]);
+  useEffect(onSearchDiscountGroups, []);
   return (
     <>
       <Card>
@@ -209,6 +241,9 @@ export const Rides = withRouter(({ history }) => {
                       layout="vertical"
                       form={startForm}
                       onFinish={onStartRide}
+                      initialValues={{
+                        discountGroupId: null,
+                      }}
                     >
                       <Row gutter={[4, 4]}>
                         <Col span={24}>
@@ -268,48 +303,43 @@ export const Rides = withRouter(({ history }) => {
                         </Col>
 
                         <Col span={24}>
-                          <Form.Item
-                            label="할인 그룹 ID:"
-                            name="discountGroupId"
-                            onChange={({ target }) =>
-                              setUseDiscount(!!target.value)
-                            }
-                            rules={[
-                              {
-                                pattern:
-                                  /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
-                                message: '올바른 할인 그룹 ID를 입력해주세요.',
-                              },
-                            ]}
-                          >
-                            <Input
-                              disabled={isLoading}
-                              placeholder="할인 그룹 ID를 입력해주세요."
-                            />
+                          <Form.Item label="할인 그룹:" name="discountGroupId">
+                            <Select
+                              showSearch
+                              filterOption={false}
+                              placeholder={'할인 그룹을 선택해주세요.'}
+                              onSearch={onSearchDiscountGroupsWithDebounce}
+                              onChange={onChangeDiscountGroup}
+                              loading={isLoading}
+                            >
+                              <Select.Option>선택 안함</Select.Option>
+                              {discountGroups.map(
+                                ({ discountGroupId, name }) => (
+                                  <Select.Option key={discountGroupId}>
+                                    {name}
+                                  </Select.Option>
+                                )
+                              )}
+                            </Select>
                           </Form.Item>
                         </Col>
 
-                        {useDiscount && (
+                        {selectDiscountGroupId && (
                           <Col span={24}>
-                            <Form.Item
-                              label="할인 ID:"
-                              name="discountId"
-                              rules={[
-                                {
-                                  required: true,
-                                  message: '할인 ID는 필수입니다.',
-                                },
-                                {
-                                  pattern:
-                                    /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
-                                  message: '올바른 할인 ID를 입력해주세요.',
-                                },
-                              ]}
-                            >
-                              <Input
-                                disabled={isLoading}
-                                placeholder="할인 ID를 입력해주세요."
-                              />
+                            <Form.Item label="할인:" name="discountId">
+                              <Select
+                                showSearch
+                                filterOption={false}
+                                placeholder={'할인을 선택해주세요.'}
+                                onSearch={onSearchDiscounts}
+                                loading={isLoading}
+                              >
+                                {discounts.map(({ discountId }) => (
+                                  <Select.Option key={discountId}>
+                                    {discountId}
+                                  </Select.Option>
+                                ))}
+                              </Select>
                             </Form.Item>
                           </Col>
                         )}
