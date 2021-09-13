@@ -4,6 +4,7 @@ import {
   HomeOutlined,
   KeyOutlined,
   LockOutlined,
+  PercentageOutlined,
   SettingOutlined,
   SolutionOutlined,
   UserOutlined,
@@ -48,6 +49,12 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/dashboard/rides" icon={<SolutionOutlined />}>
             라이드
+          </Menu.Item>
+          <Menu.Item
+            key="/dashboard/discountGroups"
+            icon={<PercentageOutlined />}
+          >
+            할인 그룹
           </Menu.Item>
           <Menu.Item
             key="/dashboard/webhooks"

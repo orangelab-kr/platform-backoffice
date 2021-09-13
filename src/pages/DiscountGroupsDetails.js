@@ -21,7 +21,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { Client } from '../tools';
 
-export const DiscountGroupDetails = withRouter(({ history }) => {
+export const DiscountGroupsDetails = withRouter(({ history }) => {
   const [discountGroup, setDiscountGroup] = useState(null);
   const [discounts, setDiscounts] = useState([]);
   const { discountGroupId } = useParams();
@@ -33,7 +33,7 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
 
   const columns = [
     {
-      title: '디스카운트 ID',
+      title: '할인 ID',
       dataIndex: 'discountId',
       key: 'discountId',
       render: (discountId) => (
@@ -91,19 +91,23 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
       search,
     };
 
-    Client.get(`/discount/${discountGroupId}`, { params }).then(({ data }) => {
-      setLoading(false);
-      setDiscountGroup(data.discountGroup);
-      setDiscounts(data.discounts);
-      setTotal(data.total);
-    });
+    Client.get(`/discount/discountGroups/${discountGroupId}`, { params }).then(
+      ({ data }) => {
+        setLoading(false);
+        setDiscountGroup(data.discountGroup);
+        setDiscounts(data.discounts);
+        setTotal(data.total);
+      }
+    );
   };
 
   const revokeDiscount = (discountId) => {
     if (!discountGroupId || !discountId) return;
     setLoading(true);
 
-    Client.delete(`/discount/${discountGroupId}/${discountId}`).then(() => {
+    Client.delete(
+      `/discount/discountGroups/${discountGroupId}/${discountId}`
+    ).then(() => {
       loadDiscountGroup();
       setLoading(false);
     });
@@ -158,7 +162,7 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
                   type="primary"
                   onClick={generateDiscount}
                 >
-                  디스카운트 발급
+                  할인 발급
                 </Button>
               </Col>
             </Row>
@@ -168,9 +172,9 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
             <>
               <Col span={24}>
                 <Card>
-                  <Typography.Title level={4}>디스카운트 정보</Typography.Title>
+                  <Typography.Title level={4}>할인 정보</Typography.Title>
                   <Descriptions bordered size="small">
-                    <Descriptions.Item label="디스카운트 그룹ID" span={2}>
+                    <Descriptions.Item label="할인 그룹 ID" span={2}>
                       <Typography.Text copyable={true}>
                         {discountGroup.discountGroupId}
                       </Typography.Text>
@@ -178,7 +182,7 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
                     <Descriptions.Item label="설명">
                       {discountGroup.description}
                     </Descriptions.Item>
-                    <Descriptions.Item label="남은 디스카운트">
+                    <Descriptions.Item label="남은 할인">
                       {discountGroup.remainingCount !== null
                         ? `${discountGroup.remainingCount.toLocaleString()}개`
                         : '제한 없음'}
@@ -235,9 +239,7 @@ export const DiscountGroupDetails = withRouter(({ history }) => {
                 <Card>
                   <Row justify="space-between">
                     <Col>
-                      <Typography.Title level={4}>
-                        디스카운트 목록
-                      </Typography.Title>
+                      <Typography.Title level={4}>할인 목록</Typography.Title>
                     </Col>
                     <Col>
                       <Row>
