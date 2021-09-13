@@ -63,7 +63,7 @@ export const Rides = withRouter(({ history }) => {
 
   const onSearchDiscounts = (discountGroupId, search) => {
     setLoading(true);
-    const params = { search, take: 10 };
+    const params = { search, take: 10, showUsed: false };
     Client.get(`/discount/discountGroups/${discountGroupId}`, { params })
       .finally(() => setLoading(false))
       .then(({ data }) => setDiscounts(data.discounts));

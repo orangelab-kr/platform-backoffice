@@ -44,7 +44,7 @@ export const DiscountGroupsDetails = withRouter(({ history }) => {
       title: '사용일자',
       dataIndex: 'usedAt',
       key: 'usedAt',
-      render: (usedAt, { discountId, lockedAt }) =>
+      render: (usedAt, { discountId, lockedAt, expiredAt }) =>
         usedAt ? (
           <Button size="small" icon={<CheckCircleOutlined />} disabled>
             사용 완료: {dayjs(usedAt).format('YYYY년 MM월 DD일 H시 m분 s초')}
@@ -52,6 +52,10 @@ export const DiscountGroupsDetails = withRouter(({ history }) => {
         ) : lockedAt ? (
           <Button size="small" icon={<LockOutlined />} disabled>
             사용 중: {dayjs(lockedAt).format('YYYY년 MM월 DD일 H시 m분 s초')}
+          </Button>
+        ) : dayjs(expiredAt).isBefore() ? (
+          <Button size="small" icon={<LockOutlined />} disabled>
+            만료 됨: {dayjs(expiredAt).format('YYYY년 MM월 DD일 H시 m분 s초')}
           </Button>
         ) : (
           <Popconfirm

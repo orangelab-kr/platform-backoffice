@@ -57,7 +57,7 @@ export const Logs = () => {
     },
   ];
 
-  const requestUsers = () => {
+  const requestLogs = () => {
     setLoading(true);
     const params = {
       take,
@@ -77,21 +77,21 @@ export const Logs = () => {
   const onPagnationChange = (page, pageSize) => {
     setTake(pageSize);
     setSkip(page * pageSize);
-    requestUsers();
+    requestLogs();
   };
 
   const onSearch = (search) => {
     setSearch(search);
-    requestUsers();
+    requestLogs();
   };
 
-  useEffect(requestUsers, [search, skip, take]);
+  useEffect(requestLogs, [search, skip, take]);
   return (
     <>
       <Card>
         <Row justify="space-between">
           <Col>
-            <Title level={3}>사용자 목록</Title>
+            <Title level={3}>로그 목록</Title>
           </Col>
           <Col>
             <Row>
