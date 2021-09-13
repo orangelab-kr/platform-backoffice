@@ -27,10 +27,9 @@ export const License = () => {
       license: license.split('-'),
     };
 
-    Client.post(`/license`, body).then(({ data }) => {
-      setLoading(false);
-      setResult(data.isValid);
-    });
+    Client.post(`/license`, body)
+      .then(({ data }) => setResult(data.isValid))
+      .finally(() => setLoading(false));
   };
 
   return (

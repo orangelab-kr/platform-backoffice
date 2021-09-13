@@ -1,11 +1,11 @@
-import { Button, Card, Col, Input, Row, Table, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Input, Row, Table, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 
-import { Client } from "../tools";
-import { Link } from "react-router-dom";
-import { UserAddOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
-import { withRouter } from "react-router-dom";
+import { Client } from '../tools';
+import { Link } from 'react-router-dom';
+import { UserAddOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import { withRouter } from 'react-router-dom';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -13,34 +13,34 @@ const { Search } = Input;
 export const Users = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const columns = [
     {
-      title: "UUID",
-      dataIndex: "platformUserId",
+      title: 'UUID',
+      dataIndex: 'platformUserId',
       render: (value) => <Link to={`/dashboard/users/${value}`}>{value}</Link>,
     },
     {
-      title: "이름",
-      dataIndex: "name",
-      key: "name",
+      title: '이름',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      title: "이메일",
-      dataIndex: "email",
-      key: "email",
+      title: '이메일',
+      dataIndex: 'email',
+      key: 'email',
     },
     {
-      title: "전화번호",
-      dataIndex: "phone",
-      key: "phone",
+      title: '전화번호',
+      dataIndex: 'phone',
+      key: 'phone',
     },
     {
-      title: "권한 그룹",
-      dataIndex: "permissionGroup",
+      title: '권한 그룹',
+      dataIndex: 'permissionGroup',
       render: (permissionGroup) => (
         <Link
           to={`/dashboard/permissionGroups/${permissionGroup.permissionGroupId}`}
@@ -50,9 +50,9 @@ export const Users = withRouter(({ history }) => {
       ),
     },
     {
-      title: "생성 일자",
-      dataIndex: "createdAt",
-      render: (createdAt) => dayjs(createdAt).format("YYYY년 MM월 DD일"),
+      title: '생성 일자',
+      dataIndex: 'createdAt',
+      render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
     },
   ];
 
@@ -64,12 +64,13 @@ export const Users = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/platform/users", { params }).then((res) => {
-      const { platformUsers, total } = res.data;
-      setDataSource(platformUsers);
-      setTotal(total);
-      setLoading(false);
-    });
+    Client.get('/platform/users', { params })
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const { platformUsers, total } = res.data;
+        setDataSource(platformUsers);
+        setTotal(total);
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {
@@ -116,7 +117,7 @@ export const Users = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="platformUserId"
           loading={isLoading}
-          scroll={{ x: "100%" }}
+          scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,

@@ -81,7 +81,7 @@ export const Rides = withRouter(({ history }) => {
         terminatedAt ? `${price.toLocaleString()}원` : '',
     },
     {
-      title: '디스카운트',
+      title: '할인',
       dataIndex: 'discountId',
       render: (discountId) => (discountId ? '사용됨' : '사용하지 않음'),
     },
@@ -113,12 +113,13 @@ export const Rides = withRouter(({ history }) => {
       search,
     };
 
-    Client.get('/ride/rides', { params }).then((res) => {
-      const { rides, total } = res.data;
-      setDataSource(rides);
-      setTotal(total);
-      setLoading(false);
-    });
+    Client.get('/ride/rides', { params })
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const { rides, total } = res.data;
+        setDataSource(rides);
+        setTotal(total);
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {
@@ -159,11 +160,12 @@ export const Rides = withRouter(({ history }) => {
       birthday: birthday.format('YYYY-MM-DD'),
     };
 
-    Client.post(`/ride/rides`, body).then(({ data }) => {
-      setLoading(false);
-      setShowStartForm(false);
-      requestRides();
-    });
+    Client.post(`/ride/rides`, body)
+      .finally(() => setLoading(false))
+      .then(() => {
+        setShowStartForm(false);
+        requestRides();
+      });
   };
 
   useEffect(requestRides, [search, skip, take]);
@@ -267,7 +269,7 @@ export const Rides = withRouter(({ history }) => {
 
                         <Col span={24}>
                           <Form.Item
-                            label="디스카운트 그룹 ID:"
+                            label="할인 그룹 ID:"
                             name="discountGroupId"
                             onChange={({ target }) =>
                               setUseDiscount(!!target.value)
@@ -276,14 +278,13 @@ export const Rides = withRouter(({ history }) => {
                               {
                                 pattern:
                                   /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
-                                message:
-                                  '올바른 디스카운트 그룹 ID를 입력해주세요.',
+                                message: '올바른 할인 그룹 ID를 입력해주세요.',
                               },
                             ]}
                           >
                             <Input
                               disabled={isLoading}
-                              placeholder="디스카운트 그룹 ID를 입력해주세요."
+                              placeholder="할인 그룹 ID를 입력해주세요."
                             />
                           </Form.Item>
                         </Col>
@@ -291,24 +292,23 @@ export const Rides = withRouter(({ history }) => {
                         {useDiscount && (
                           <Col span={24}>
                             <Form.Item
-                              label="디스카운트 ID:"
+                              label="할인 ID:"
                               name="discountId"
                               rules={[
                                 {
                                   required: true,
-                                  message: '디스카운트 ID는 필수입니다.',
+                                  message: '할인 ID는 필수입니다.',
                                 },
                                 {
                                   pattern:
                                     /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
-                                  message:
-                                    '올바른 디스카운트 ID를 입력해주세요.',
+                                  message: '올바른 할인 ID를 입력해주세요.',
                                 },
                               ]}
                             >
                               <Input
                                 disabled={isLoading}
-                                placeholder="디스카운트 ID를 입력해주세요."
+                                placeholder="할인 ID를 입력해주세요."
                               />
                             </Form.Item>
                           </Col>

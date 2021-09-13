@@ -65,12 +65,13 @@ export const Logs = () => {
       search,
     };
 
-    Client.get('/platform/logs', { params }).then((res) => {
-      const { platformLogs, total } = res.data;
-      setDataSource(platformLogs);
-      setTotal(total);
-      setLoading(false);
-    });
+    Client.get('/platform/logs', { params })
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const { platformLogs, total } = res.data;
+        setDataSource(platformLogs);
+        setTotal(total);
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {

@@ -66,28 +66,32 @@ export const Webhooks = withRouter(({ history }) => {
 
   const requestWebhookSettings = () => {
     setLoading(true);
-    Client.get('/webhook/settings').then((res) => {
-      const fields = {};
-      const { webhooks } = res.data;
-      webhooks.forEach(({ type, url }) => (fields[type] = url));
-      form.setFieldsValue(fields);
-      setSettings(fields);
-      setLoading(false);
-    });
+    Client.get('/webhook/settings')
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const fields = {};
+        const { webhooks } = res.data;
+        webhooks.forEach(({ type, url }) => (fields[type] = url));
+        form.setFieldsValue(fields);
+        setSettings(fields);
+      });
   };
 
   const saveWebhookSettings = async (settings) => {
-    setLoading(true);
-    await Promise.all([
-      Object.keys(settings).map((type) =>
-        Client.post(`/webhook/settings/${type}`, {
-          url: settings[type] || '',
-        })
-      ),
-    ]);
+    try {
+      setLoading(true);
+      await Promise.all([
+        Object.keys(settings).map((type) =>
+          Client.post(`/webhook/settings/${type}`, {
+            url: settings[type] || '',
+          })
+        ),
+      ]);
 
-    message.success(`저장되었습니다.`);
-    setLoading(false);
+      message.success(`저장되었습니다.`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const requestWebhookRequests = () => {
@@ -98,12 +102,13 @@ export const Webhooks = withRouter(({ history }) => {
       search,
     };
 
-    Client.get('/webhook/requests', { params }).then((res) => {
-      const { requests, total } = res.data;
-      setDataSource(requests);
-      setTotal(total);
-      setLoading(false);
-    });
+    Client.get('/webhook/requests', { params })
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const { requests, total } = res.data;
+        setDataSource(requests);
+        setTotal(total);
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {

@@ -91,45 +91,42 @@ export const DiscountGroupsDetails = withRouter(({ history }) => {
       search,
     };
 
-    Client.get(`/discount/discountGroups/${discountGroupId}`, { params }).then(
-      ({ data }) => {
-        setLoading(false);
+    Client.get(`/discount/discountGroups/${discountGroupId}`, { params })
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
         setDiscountGroup(data.discountGroup);
         setDiscounts(data.discounts);
         setTotal(data.total);
-      }
-    );
+      });
   };
 
   const revokeDiscount = (discountId) => {
     if (!discountGroupId || !discountId) return;
     setLoading(true);
 
-    Client.delete(
-      `/discount/discountGroups/${discountGroupId}/${discountId}`
-    ).then(() => {
-      loadDiscountGroup();
-      setLoading(false);
-    });
+    Client.delete(`/discount/discountGroups/${discountGroupId}/${discountId}`)
+      .finally(() => setLoading(false))
+      .then(() => loadDiscountGroup());
   };
 
   const generateDiscount = () => {
     if (!discountGroupId) return;
     setLoading(true);
 
-    Client.get(`/discount/${discountGroupId}/generate`).then(({ data }) => {
-      message.success(
-        <>
-          <Typography.Text copyable={true}>
-            {data.discount.discountId}
-          </Typography.Text>
-          가 발급되었습니다.
-        </>
-      );
+    Client.get(`/discount/discountGroups/${discountGroupId}/generate`)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        message.success(
+          <>
+            <Typography.Text copyable={true}>
+              {data.discount.discountId}
+            </Typography.Text>
+            가 발급되었습니다.
+          </>
+        );
 
-      loadDiscountGroup();
-      setLoading(false);
-    });
+        loadDiscountGroup();
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {

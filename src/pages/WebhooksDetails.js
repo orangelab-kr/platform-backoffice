@@ -4,6 +4,7 @@ import {
   Card,
   Col,
   Descriptions,
+  message,
   Modal,
   Row,
   Table,
@@ -86,9 +87,9 @@ export const WebhooksDetails = withRouter(({ history }) => {
     if (!requestId) return;
     setLoading(true);
 
-    Client.get(`/webhook/requests/${requestId}/retry`).then(({ data }) => {
-      setLoading(false);
-    });
+    Client.get(`/webhook/requests/${requestId}/retry`)
+      .finally(() => setLoading(false))
+      .then(() => message.info('재시도를 요청하였습니다.'));
   };
 
   useEffect(loadRequest, [requestId]);

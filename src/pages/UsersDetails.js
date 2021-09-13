@@ -8,20 +8,20 @@ import {
   Row,
   Typography,
   message,
-} from "antd";
-import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
-import { useParams, withRouter } from "react-router-dom";
+} from 'antd';
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { useParams, withRouter } from 'react-router-dom';
 
-import { Client } from "../tools";
-import { PermissionGroupsSelect } from "../components";
+import { Client } from '../tools';
+import { PermissionGroupsSelect } from '../components';
 
 const { Title } = Typography;
 
 export const UsersDetails = withRouter(({ history }) => {
-  const [user, setUser] = useState({ name: "로딩 중..." });
+  const [user, setUser] = useState({ name: '로딩 중...' });
   const params = useParams();
-  const userId = params.userId !== "add" ? params.userId : "";
+  const userId = params.userId !== 'add' ? params.userId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
@@ -29,32 +29,34 @@ export const UsersDetails = withRouter(({ history }) => {
     if (!userId) return;
     setLoading(true);
 
-    Client.get(`/platform/users/${userId}`).then(({ data }) => {
-      setUser(data.platformUser);
-      form.setFieldsValue(data.platformUser);
-      setLoading(false);
-    });
+    Client.get(`/platform/users/${userId}`)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        setUser(data.platformUser);
+        form.setFieldsValue(data.platformUser);
+      });
   };
 
   const deleteUser = () => {
     setLoading(true);
-    Client.delete(`/platform/users/${userId}`).then(() => {
-      message.success(`삭제되었습니다.`);
-      setLoading(false);
-      history.push(`/dashboard/users`);
-    });
+    Client.delete(`/platform/users/${userId}`)
+      .finally(() => setLoading(false))
+      .then(() => {
+        message.success(`삭제되었습니다.`);
+        history.push(`/dashboard/users`);
+      });
   };
 
   const onSave = (body) => {
     setLoading(true);
-    Client.post(`/platform/users/${userId}`, body).then(({ data }) => {
-      message.success(`${userId ? "수정" : "생성"}되었습니다.`);
-      setLoading(false);
-
-      if (data.platformUserId) {
-        history.push(`/dashboard/users/${data.platformUserId}`);
-      }
-    });
+    Client.post(`/platform/users/${userId}`, body)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        message.success(`${userId ? '수정' : '생성'}되었습니다.`);
+        if (data.platformUserId) {
+          history.push(`/dashboard/users/${data.platformUserId}`);
+        }
+      });
   };
 
   useEffect(loadUser, [form, userId]);
@@ -64,7 +66,7 @@ export const UsersDetails = withRouter(({ history }) => {
         <Form layout="vertical" onFinish={onSave} form={form}>
           <Row justify="space-between" style={{ marginBottom: 20 }}>
             <Col>
-              <Title level={3}>{userId ? user.name : "새로운 사용자"}</Title>
+              <Title level={3}>{userId ? user.name : '새로운 사용자'}</Title>
             </Col>
             <Col>
               <Row gutter={[4, 0]}>
@@ -92,7 +94,7 @@ export const UsersDetails = withRouter(({ history }) => {
                     type="primary"
                     htmlType="submit"
                   >
-                    {userId ? "저장하기" : "생성하기"}
+                    {userId ? '저장하기' : '생성하기'}
                   </Button>
                 </Col>
               </Row>

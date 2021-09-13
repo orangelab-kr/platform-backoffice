@@ -55,25 +55,25 @@ export const RidesDetails = withRouter(() => {
     if (!rideId) return;
     setLoading(true);
 
-    Client.get(`/ride/rides/${rideId}`).then(({ data }) => {
-      setRide(data.ride);
-
-      if (!showTerminate) {
-        const { latitude, longitude } = data.ride.startedKickboardLocation;
-        setTerminateLocation(new window.naver.maps.LatLng(latitude, longitude));
-      }
-
-      setLoading(false);
-    });
+    Client.get(`/ride/rides/${rideId}`)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        setRide(data.ride);
+        if (!showTerminate) {
+          const { latitude, longitude } = data.ride.startedKickboardLocation;
+          setTerminateLocation(
+            new window.naver.maps.LatLng(latitude, longitude)
+          );
+        }
+      });
   };
 
   const loadRidePayments = () => {
     setLoading(true);
 
-    Client.get(`/ride/rides/${rideId}/payments`).then(({ data }) => {
-      setRidePayments(data.payments);
-      setLoading(false);
-    });
+    Client.get(`/ride/rides/${rideId}/payments`)
+      .finally(() => setLoading(false))
+      .then(({ data }) => setRidePayments(data.payments));
   };
 
   const onReceiptChange = (key) => {
@@ -89,29 +89,30 @@ export const RidesDetails = withRouter(() => {
   const refundRidePayment = (paymentId) => {
     setLoading(true);
 
-    Client.delete(`/ride/rides/${rideId}/payments/${paymentId}`).then(() => {
-      loadRidePayments();
-      setLoading(false);
-    });
+    Client.delete(`/ride/rides/${rideId}/payments/${paymentId}`)
+      .finally(() => setLoading(false))
+      .then(() => loadRidePayments());
   };
 
   const onAddPayment = (paymentInfo) => {
     setLoading(true);
 
-    Client.post(`/ride/rides/${rideId}/payments`, paymentInfo).then(() => {
-      loadRidePayments();
-      setLoading(false);
-      setShowAddPayment(false);
-    });
+    Client.post(`/ride/rides/${rideId}/payments`, paymentInfo)
+      .finally(() => setLoading(false))
+      .then(() => {
+        loadRidePayments();
+        setShowAddPayment(false);
+      });
   };
 
   const getTimeline = () => {
     setLoading(true);
 
-    Client.get(`/ride/rides/${rideId}/timeline`).then(({ data }) => {
-      setTimeline(data.timeline);
-      setLoading(false);
-    });
+    Client.get(`/ride/rides/${rideId}/timeline`)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        setTimeline(data.timeline);
+      });
   };
 
   const calculateTerminatePricing = () => {
@@ -127,10 +128,9 @@ export const RidesDetails = withRouter(() => {
         longitude: debouncedTerminateLocation._lng,
         terminatedAt: terminatedAt.format(),
       },
-    }).then(({ data }) => {
-      setTerminateReceipt(data.pricing);
-      setLoading(false);
-    });
+    })
+      .finally(() => setLoading(false))
+      .then(({ data }) => setTerminateReceipt(data.pricing));
   };
 
   const setTerminateLocation = (location) => {
@@ -152,31 +152,30 @@ export const RidesDetails = withRouter(() => {
         terminatedAt: terminatedAt.format(),
         terminatedType: 'ADMIN_REQUESTED',
       },
-    }).then(() => {
-      loadRide();
-      setShowTerminate(false);
-      setLoading(false);
-    });
+    })
+      .finally(() => setLoading(false))
+      .then(() => {
+        loadRide();
+        setShowTerminate(false);
+      });
   };
 
   const onLights = () => {
     setLoading(true);
 
     const action = !lightsOn ? 'on' : 'off';
-    Client.get(`/ride/rides/${rideId}/lights/${action}`).then(() => {
-      setLightsOn(!lightsOn);
-      setLoading(false);
-    });
+    Client.get(`/ride/rides/${rideId}/lights/${action}`)
+      .finally(() => setLoading(false))
+      .then(() => setLightsOn(!lightsOn));
   };
 
   const onLock = () => {
     setLoading(true);
 
     const action = !lockOn ? 'on' : 'off';
-    Client.get(`/ride/rides/${rideId}/lock/${action}`).then(() => {
-      setLockOn(!lockOn);
-      setLoading(false);
-    });
+    Client.get(`/ride/rides/${rideId}/lock/${action}`)
+      .finally(() => setLoading(false))
+      .then(() => setLockOn(!lockOn));
   };
 
   useEffect(loadRide, [showTerminate, rideId]);
@@ -534,7 +533,7 @@ export const RidesDetails = withRouter(() => {
                             '업로드 하지 않음'
                           )}
                         </Descriptions.Item>
-                        <Descriptions.Item label="디스카운트 ID" span={1}>
+                        <Descriptions.Item label="할인 ID" span={1}>
                           {!ride.discountGroupId || !ride.discountId ? (
                             '적용 안함'
                           ) : (

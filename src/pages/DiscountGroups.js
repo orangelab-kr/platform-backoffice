@@ -48,12 +48,12 @@ export const DiscountGroups = withRouter(({ history }) => {
     };
 
     Client.get('/discount/discountGroups', { params })
+      .finally(() => setLoading(false))
       .then((res) => {
         const { discountGroups, total } = res.data;
         setDataSource(discountGroups);
         setTotal(total);
-      })
-      .finally(() => setLoading(false));
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {

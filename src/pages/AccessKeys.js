@@ -69,13 +69,17 @@ export const AccessKeys = withRouter(({ history }) => {
   };
 
   const setEnabled = async (accessKey, isEnabled) => {
-    setLoading(true);
-    const { platformAccessKeyId } = accessKey;
-    await Client.post(`/platform/accessKeys/${platformAccessKeyId}`, {
-      isEnabled,
-    });
-    accessKey.isEnabled = isEnabled;
-    setLoading(false);
+    try {
+      setLoading(true);
+      const { platformAccessKeyId } = accessKey;
+      await Client.post(`/platform/accessKeys/${platformAccessKeyId}`, {
+        isEnabled,
+      });
+
+      accessKey.isEnabled = isEnabled;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const columns = [
@@ -161,12 +165,13 @@ export const AccessKeys = withRouter(({ history }) => {
       search,
     };
 
-    Client.get('/platform/accessKeys', { params }).then((res) => {
-      const { platformAccessKeys, total } = res.data;
-      setDataSource(platformAccessKeys);
-      setTotal(total);
-      setLoading(false);
-    });
+    Client.get('/platform/accessKeys', { params })
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const { platformAccessKeys, total } = res.data;
+        setDataSource(platformAccessKeys);
+        setTotal(total);
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {

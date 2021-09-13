@@ -40,35 +40,35 @@ export const AccessKeysDetails = withRouter(({ history }) => {
     if (!accessKeyId) return;
     setLoading(true);
 
-    Client.get(`/platform/accessKeys/${accessKeyId}`).then(({ data }) => {
-      setAccessKey(data.platformAccessKey);
-      form.setFieldsValue(data.platformAccessKey);
-      setEnabled(data.platformAccessKey.isEnabled);
-      setLoading(false);
-    });
+    Client.get(`/platform/accessKeys/${accessKeyId}`)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
+        setAccessKey(data.platformAccessKey);
+        form.setFieldsValue(data.platformAccessKey);
+        setEnabled(data.platformAccessKey.isEnabled);
+      });
   };
 
   const deleteAccessKey = () => {
     setLoading(true);
-    Client.delete(`/platform/accessKeys/${accessKeyId}`).then(() => {
-      message.success(`삭제되었습니다.`);
-      setLoading(false);
-      history.push(`/dashboard/accessKeys`);
-    });
+    Client.delete(`/platform/accessKeys/${accessKeyId}`)
+      .finally(() => setLoading(false))
+      .then(() => {
+        message.success(`삭제되었습니다.`);
+        history.push(`/dashboard/accessKeys`);
+      });
   };
 
   const onSave = (body) => {
     setLoading(true);
-    Client.post(`/platform/accessKeys/${accessKeyId}`, body).then(
-      ({ data }) => {
+    Client.post(`/platform/accessKeys/${accessKeyId}`, body)
+      .finally(() => setLoading(false))
+      .then(({ data }) => {
         message.success(`${accessKeyId ? '수정' : '생성'}되었습니다.`);
-        setLoading(false);
-
         if (data.platformAccessKeyId) {
           history.push(`/dashboard/accessKeys/${data.platformAccessKeyId}`);
         }
-      }
-    );
+      });
   };
 
   useEffect(loadAccessKey, [form, accessKeyId]);

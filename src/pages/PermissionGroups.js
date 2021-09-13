@@ -1,11 +1,11 @@
-import { ApiOutlined, CheckCircleOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Input, Row, Table, Tag, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import { ApiOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Input, Row, Table, Tag, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 
-import { Client } from "../tools";
-import { Link } from "react-router-dom";
-import dayjs from "dayjs";
-import { withRouter } from "react-router-dom";
+import { Client } from '../tools';
+import { Link } from 'react-router-dom';
+import dayjs from 'dayjs';
+import { withRouter } from 'react-router-dom';
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -13,32 +13,32 @@ const { Search } = Input;
 export const PermissionGroups = withRouter(({ history }) => {
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
 
   const columns = [
     {
-      title: "UUID",
-      dataIndex: "permissionGroupId",
+      title: 'UUID',
+      dataIndex: 'permissionGroupId',
       render: (value) => (
         <Link to={`/dashboard/permissionGroups/${value}`}>{value}</Link>
       ),
     },
     {
-      title: "이름",
-      dataIndex: "name",
-      key: "name",
+      title: '이름',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      title: "설명",
-      dataIndex: "description",
-      key: "description",
+      title: '설명',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
-      title: "권한",
-      dataIndex: "permissions",
+      title: '권한',
+      dataIndex: 'permissions',
       render: (permissions) => (
         <>
           {permissions.map((permission, i) => {
@@ -53,15 +53,15 @@ export const PermissionGroups = withRouter(({ history }) => {
       ),
     },
     {
-      title: "커스텀",
-      dataIndex: "platformId",
+      title: '커스텀',
+      dataIndex: 'platformId',
       render: (platformId) =>
-        platformId && <CheckCircleOutlined style={{ color: "green" }} />,
+        platformId && <CheckCircleOutlined style={{ color: 'green' }} />,
     },
     {
-      title: "생성 일자",
-      dataIndex: "createdAt",
-      render: (createdAt) => dayjs(createdAt).format("YYYY년 MM월 DD일"),
+      title: '생성 일자',
+      dataIndex: 'createdAt',
+      render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
     },
   ];
 
@@ -73,12 +73,13 @@ export const PermissionGroups = withRouter(({ history }) => {
       search,
     };
 
-    Client.get("/platform/permissionGroups", { params }).then((res) => {
-      const { permissionGroups, total } = res.data;
-      setDataSource(permissionGroups);
-      setTotal(total);
-      setLoading(false);
-    });
+    Client.get('/platform/permissionGroups', { params })
+      .finally(() => setLoading(false))
+      .then((res) => {
+        const { permissionGroups, total } = res.data;
+        setDataSource(permissionGroups);
+        setTotal(total);
+      });
   };
 
   const onPagnationChange = (page, pageSize) => {
@@ -129,7 +130,7 @@ export const PermissionGroups = withRouter(({ history }) => {
           dataSource={dataSource}
           rowKey="permissionGroupId"
           loading={isLoading}
-          scroll={{ x: "100%" }}
+          scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
             onShowSizeChange: true,
