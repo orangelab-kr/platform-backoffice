@@ -1,4 +1,9 @@
-import { PlusOutlined, SmileOutlined, StopOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  SmileOutlined,
+  StopOutlined,
+} from '@ant-design/icons';
 import {
   Badge,
   Button,
@@ -21,9 +26,11 @@ import {
   Tabs,
   Tag,
   Typography,
+  Select,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
@@ -36,8 +43,12 @@ export const RidesDetails = withRouter(() => {
   const [timeline, setTimeline] = useState([]);
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showTerminate, setShowTerminate] = useState(false);
+  const [showChangeDiscount, setShowChangeDiscount] = useState(false);
   const [terminateReceipt, setTerminateReceipt] = useState(null);
+  const [selectDiscountGroupId, setSelectDiscountGroupId] = useState(null);
   const [lightsOn, setLightsOn] = useState(false);
+  const [discountGroups, setDiscountGroups] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
   const [lockOn, setLockOn] = useState(false);
   const [terminateLocation, setTerminateLocationState] = useState({
     _lat: 0,
@@ -47,6 +58,7 @@ export const RidesDetails = withRouter(() => {
   const debouncedTerminateLocation = useDebounce(terminateLocation, 1000);
   const addPaymentForm = useForm()[0];
   const terminateForm = useForm()[0];
+  const changeDiscountForm = useForm()[0];
   const params = useParams();
   const rideId = params.rideId !== 'add' ? params.rideId : '';
   const [isLoading, setLoading] = useState(false);
@@ -65,6 +77,46 @@ export const RidesDetails = withRouter(() => {
             new window.naver.maps.LatLng(latitude, longitude)
           );
         }
+      });
+  };
+
+  const onSearchDiscountGroups = (search) => {
+    setLoading(true);
+    const params = { search };
+    Client.get('/discount/discountGroups', { params })
+      .finally(() => setLoading(false))
+      .then(({ data }) => setDiscountGroups(data.discountGroups));
+  };
+
+  const onSearchDiscountGroupsWithDebounce = _.debounce(
+    onSearchDiscountGroups,
+    500
+  );
+
+  const onChangeDiscountGroup = (discountGroupId) => {
+    setSelectDiscountGroupId(discountGroupId);
+    if (!discountGroupId) return;
+    onSearchDiscounts(discountGroupId, '');
+  };
+
+  const onSearchDiscounts = (discountGroupId, search) => {
+    setLoading(true);
+    const params = { search, take: 10 };
+    Client.get(`/discount/discountGroups/${discountGroupId}`, { params })
+      .finally(() => setLoading(false))
+      .then(({ data }) => setDiscounts(data.discounts));
+  };
+
+  const onChangeDiscount = ({ discountId, discountGroupId }) => {
+    Client.post(`/ride/rides/${rideId}/discount`, {
+      discountId,
+      discountGroupId,
+    })
+      .finally(() => setLoading(false))
+      .then(() => {
+        message.success('할인을 변경하였습니다.');
+        setShowChangeDiscount(false);
+        loadRide();
       });
   };
 
@@ -179,6 +231,7 @@ export const RidesDetails = withRouter(() => {
   };
 
   useEffect(loadRide, [showTerminate, rideId]);
+  useEffect(onSearchDiscountGroups, []);
   useEffect(calculateTerminatePricing, [
     debouncedTerminateLocation,
     rideId,
@@ -543,6 +596,92 @@ export const RidesDetails = withRouter(() => {
                               {ride.discountId}
                             </Link>
                           )}
+
+                          <Button
+                            type="link"
+                            shape="circle"
+                            onClick={() => setShowChangeDiscount(true)}
+                            icon={<EditOutlined />}
+                          />
+
+                          <Modal
+                            title="할인 변경"
+                            visible={showChangeDiscount}
+                            okType="primary"
+                            okText="변경"
+                            cancelText="취소"
+                            onOk={changeDiscountForm.submit}
+                            onCancel={() => setShowChangeDiscount(false)}
+                          >
+                            <Form
+                              layout="vertical"
+                              form={changeDiscountForm}
+                              onFinish={onChangeDiscount}
+                              initialValues={{
+                                discountGroupId: ride.discountGroupId || null,
+                                discountId: ride.discountId || null,
+                              }}
+                            >
+                              <Row gutter={[4, 4]}>
+                                <Col span={24}>
+                                  <Form.Item
+                                    label="할인 그룹:"
+                                    name="discountGroupId"
+                                    required
+                                  >
+                                    <Select
+                                      showSearch
+                                      filterOption={false}
+                                      placeholder={'할인 그룹을 선택해주세요.'}
+                                      onSearch={
+                                        onSearchDiscountGroupsWithDebounce
+                                      }
+                                      onChange={onChangeDiscountGroup}
+                                      loading={isLoading}
+                                    >
+                                      <Select.Option>선택 안함</Select.Option>
+                                      {discountGroups.map(
+                                        ({ discountGroupId, name }) => (
+                                          <Select.Option key={discountGroupId}>
+                                            {name}
+                                          </Select.Option>
+                                        )
+                                      )}
+                                    </Select>
+                                  </Form.Item>
+                                </Col>
+                                {selectDiscountGroupId && (
+                                  <Col span={24}>
+                                    <Form.Item
+                                      label="할인:"
+                                      name="discountId"
+                                      required
+                                      rules={[
+                                        {
+                                          required: true,
+                                          message: '반드시 선택해주세요.',
+                                        },
+                                      ]}
+                                    >
+                                      <Select
+                                        showSearch
+                                        filterOption={false}
+                                        placeholder={'할인을 선택해주세요.'}
+                                        onSearch={onSearchDiscounts}
+                                        loading={isLoading}
+                                      >
+                                        {discounts.map(({ discountId }) => (
+                                          <Select.Option key={discountId}>
+                                            {discountId}
+                                          </Select.Option>
+                                        ))}
+                                      </Select>
+                                    </Form.Item>
+                                  </Col>
+                                )}
+                              </Row>
+                            </Form>
+                          </Modal>
                         </Descriptions.Item>
                       </Descriptions>
                     </Tabs.TabPane>
@@ -554,7 +693,13 @@ export const RidesDetails = withRouter(() => {
                             width: '100%',
                             height: '400px',
                           }}
-                          defaultZoom={10}
+                          defaultZoom={14}
+                          center={
+                            new window.naver.maps.LatLng(
+                              ride.startedKickboardLocation.latitude,
+                              ride.startedKickboardLocation.longitude
+                            )
+                          }
                         >
                           <Polyline
                             path={[

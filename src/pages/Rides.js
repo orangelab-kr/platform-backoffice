@@ -326,7 +326,17 @@ export const Rides = withRouter(({ history }) => {
 
                         {selectDiscountGroupId && (
                           <Col span={24}>
-                            <Form.Item label="할인:" name="discountId">
+                            <Form.Item
+                              label="할인:"
+                              name="discountId"
+                              required
+                              rules={[
+                                {
+                                  required: true,
+                                  message: '할인 ID를 반드시 선택해주세요.',
+                                },
+                              ]}
+                            >
                               <Select
                                 showSearch
                                 filterOption={false}
