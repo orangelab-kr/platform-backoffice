@@ -66,7 +66,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
-        history.push(`/dashboard/permissionGroups`);
+        history.push(`/permissionGroups`);
       });
   };
 
@@ -80,7 +80,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
         message.success(`${permissionGroupId ? '수정' : '생성'}되었습니다.`);
 
         if (data.permissionGroupId) {
-          history.push(`/dashboard/permissionGroups/${data.permissionGroupId}`);
+          history.push(`/permissionGroups/${data.permissionGroupId}`);
         }
       });
   };

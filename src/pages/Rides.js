@@ -73,7 +73,7 @@ export const Rides = withRouter(({ history }) => {
     {
       title: 'UUID',
       dataIndex: 'rideId',
-      render: (value) => <Link to={`/dashboard/rides/${value}`}>{value}</Link>,
+      render: (value) => <Link to={`/rides/${value}`}>{value}</Link>,
     },
     {
       title: '현재 상태',
@@ -435,7 +435,7 @@ export const Rides = withRouter(({ history }) => {
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

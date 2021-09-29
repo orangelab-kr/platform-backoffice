@@ -34,65 +34,6 @@ ReactDOM.render(
     <RenderAfterNavermapsLoaded ncpClientId="nd1nqudj4x">
       <BrowserRouter>
         <Switch>
-          <Route path="/" exact>
-            <Redirect to="/dashboard" />
-          </Route>
-          <Route path="/dashboard">
-            <RequiredLogin>
-              <Dashboard>
-                <Switch>
-                  <Route path="/dashboard" exact>
-                    <Redirect to="/dashboard/main" />
-                  </Route>
-                  <Route path="/dashboard/main">
-                    <Main />
-                  </Route>
-                  <Route path="/dashboard/users" exact>
-                    <Users />
-                  </Route>
-                  <Route path="/dashboard/users/:userId">
-                    <UsersDetails />
-                  </Route>
-                  <Route path="/dashboard/rides" exact>
-                    <Rides />
-                  </Route>
-                  <Route path="/dashboard/rides/:rideId">
-                    <RidesDetails />
-                  </Route>
-                  <Route path="/dashboard/accessKeys" exact>
-                    <AccessKeys />
-                  </Route>
-                  <Route path="/dashboard/accessKeys/:platformAccessKeyId">
-                    <AccessKeysDetails />
-                  </Route>
-                  <Route path="/dashboard/permissionGroups" exact>
-                    <PermissionGroups />
-                  </Route>
-                  <Route path="/dashboard/permissionGroups/:permissionGroupId">
-                    <PermissionGroupsDetails />
-                  </Route>
-                  <Route path="/dashboard/webhooks" exact>
-                    <Webhooks />
-                  </Route>
-                  <Route path="/dashboard/webhooks/:requestId">
-                    <WebhooksDetails />
-                  </Route>
-                  <Route path="/dashboard/discountGroups" exact>
-                    <DiscountGroups />
-                  </Route>
-                  <Route path="/dashboard/discountGroups/:discountGroupId">
-                    <DiscountGroupsDetails />
-                  </Route>
-                  <Route path="/dashboard/logs">
-                    <Logs />
-                  </Route>
-                  <Route path="/dashboard/settings">
-                    <Settings />
-                  </Route>
-                </Switch>
-              </Dashboard>
-            </RequiredLogin>
-          </Route>
           <Route path="/auth">
             <Switch>
               <Route path="/auth" exact>
@@ -100,6 +41,59 @@ ReactDOM.render(
               </Route>
               <Route path="/auth/login" component={Login} />
             </Switch>
+          </Route>
+          <Route path="/">
+            <RequiredLogin>
+              <Dashboard>
+                <Switch>
+                  <Route path="/" exact>
+                    <Main />
+                  </Route>
+                  <Route path="/users" exact>
+                    <Users />
+                  </Route>
+                  <Route path="/users/:userId">
+                    <UsersDetails />
+                  </Route>
+                  <Route path="/rides" exact>
+                    <Rides />
+                  </Route>
+                  <Route path="/rides/:rideId">
+                    <RidesDetails />
+                  </Route>
+                  <Route path="/accessKeys" exact>
+                    <AccessKeys />
+                  </Route>
+                  <Route path="/accessKeys/:platformAccessKeyId">
+                    <AccessKeysDetails />
+                  </Route>
+                  <Route path="/permissionGroups" exact>
+                    <PermissionGroups />
+                  </Route>
+                  <Route path="/permissionGroups/:permissionGroupId">
+                    <PermissionGroupsDetails />
+                  </Route>
+                  <Route path="/webhooks" exact>
+                    <Webhooks />
+                  </Route>
+                  <Route path="/webhooks/:requestId">
+                    <WebhooksDetails />
+                  </Route>
+                  <Route path="/discountGroups" exact>
+                    <DiscountGroups />
+                  </Route>
+                  <Route path="/discountGroups/:discountGroupId">
+                    <DiscountGroupsDetails />
+                  </Route>
+                  <Route path="/logs">
+                    <Logs />
+                  </Route>
+                  <Route path="/settings">
+                    <Settings />
+                  </Route>
+                </Switch>
+              </Dashboard>
+            </RequiredLogin>
           </Route>
           <Route path="*" component={NotFound} />
         </Switch>

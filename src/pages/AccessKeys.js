@@ -29,7 +29,7 @@ const { Search } = Input;
 const { Paragraph } = Typography;
 
 export const AccessKeys = withRouter(({ history }) => {
-  const [dataSource, setDataSource] = useState([]);
+  const [accessKeys, setAccessKeys] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -98,9 +98,7 @@ export const AccessKeys = withRouter(({ history }) => {
       title: '이름',
       dataIndex: 'name',
       render: (value, row) => (
-        <Link to={`/dashboard/accessKeys/${row.platformAccessKeyId}`}>
-          {value}
-        </Link>
+        <Link to={`/accessKeys/${row.platformAccessKeyId}`}>{value}</Link>
       ),
     },
     {
@@ -143,9 +141,7 @@ export const AccessKeys = withRouter(({ history }) => {
       title: '권한 그룹',
       dataIndex: 'permissionGroup',
       render: (permissionGroup) => (
-        <Link
-          to={`/dashboard/permissionGroups/${permissionGroup.permissionGroupId}`}
-        >
+        <Link to={`/permissionGroups/${permissionGroup.permissionGroupId}`}>
           {permissionGroup.name}
         </Link>
       ),
@@ -169,7 +165,7 @@ export const AccessKeys = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then((res) => {
         const { platformAccessKeys, total } = res.data;
-        setDataSource(platformAccessKeys);
+        setAccessKeys(platformAccessKeys);
         setTotal(total);
       });
   };
@@ -204,7 +200,7 @@ export const AccessKeys = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/dashboard/accessKeys/add">
+                <Link to="/accessKeys/add">
                   <Button
                     icon={<UserAddOutlined />}
                     type="primary"
@@ -219,13 +215,13 @@ export const AccessKeys = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={dataSource}
+          dataSource={accessKeys}
           rowKey="platformAccessKeyId"
           loading={isLoading}
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

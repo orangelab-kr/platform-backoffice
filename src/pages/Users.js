@@ -21,7 +21,7 @@ export const Users = withRouter(({ history }) => {
     {
       title: 'UUID',
       dataIndex: 'platformUserId',
-      render: (value) => <Link to={`/dashboard/users/${value}`}>{value}</Link>,
+      render: (value) => <Link to={`/users/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
@@ -42,9 +42,7 @@ export const Users = withRouter(({ history }) => {
       title: '권한 그룹',
       dataIndex: 'permissionGroup',
       render: (permissionGroup) => (
-        <Link
-          to={`/dashboard/permissionGroups/${permissionGroup.permissionGroupId}`}
-        >
+        <Link to={`/permissionGroups/${permissionGroup.permissionGroupId}`}>
           {permissionGroup.name}
         </Link>
       ),
@@ -103,7 +101,7 @@ export const Users = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/dashboard/users/add">
+                <Link to="/users/add">
                   <Button icon={<UserAddOutlined />} type="primary">
                     사용자 추가
                   </Button>
@@ -120,7 +118,7 @@ export const Users = withRouter(({ history }) => {
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

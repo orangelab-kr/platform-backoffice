@@ -262,7 +262,7 @@ export const DiscountGroupsDetails = withRouter(({ history }) => {
                     loading={isLoading}
                     pagination={{
                       onChange: onPagnationChange,
-                      onShowSizeChange: true,
+                      onShowSizeChange: setTake,
                       total,
                     }}
                   />

@@ -55,7 +55,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
-        history.push(`/dashboard/accessKeys`);
+        history.push(`/accessKeys`);
       });
   };
 
@@ -66,7 +66,7 @@ export const AccessKeysDetails = withRouter(({ history }) => {
       .then(({ data }) => {
         message.success(`${accessKeyId ? '수정' : '생성'}되었습니다.`);
         if (data.platformAccessKeyId) {
-          history.push(`/dashboard/accessKeys/${data.platformAccessKeyId}`);
+          history.push(`/accessKeys/${data.platformAccessKeyId}`);
         }
       });
   };

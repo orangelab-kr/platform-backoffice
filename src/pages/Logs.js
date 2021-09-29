@@ -23,7 +23,7 @@ export const Logs = () => {
       dataIndex: 'platform',
       render: (platform, { platformUser, platformAccessKey }) => (
         <Link
-          to={`/dashboard/${platformUser ? 'users' : 'accessKeys'}/${
+          to={`/${platformUser ? 'users' : 'accessKeys'}/${
             platformUser
               ? platformUser.platformUserId
               : platformAccessKey.platformAccessKey
@@ -114,7 +114,7 @@ export const Logs = () => {
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

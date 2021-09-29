@@ -32,9 +32,7 @@ export const Webhooks = withRouter(({ history }) => {
     {
       title: '요청 ID',
       dataIndex: 'requestId',
-      render: (value) => (
-        <Link to={`/dashboard/webhooks/${value}`}>{value}</Link>
-      ),
+      render: (value) => <Link to={`/webhooks/${value}`}>{value}</Link>,
     },
     {
       title: '웹훅 유형',
@@ -182,7 +180,7 @@ export const Webhooks = withRouter(({ history }) => {
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

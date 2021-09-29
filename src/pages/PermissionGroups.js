@@ -22,9 +22,7 @@ export const PermissionGroups = withRouter(({ history }) => {
     {
       title: 'UUID',
       dataIndex: 'permissionGroupId',
-      render: (value) => (
-        <Link to={`/dashboard/permissionGroups/${value}`}>{value}</Link>
-      ),
+      render: (value) => <Link to={`/permissionGroups/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
@@ -112,7 +110,7 @@ export const PermissionGroups = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/dashboard/permissionGroups/add">
+                <Link to="/permissionGroups/add">
                   <Button
                     icon={<ApiOutlined />}
                     type="primary"
@@ -133,7 +131,7 @@ export const PermissionGroups = withRouter(({ history }) => {
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

@@ -1,19 +1,19 @@
-import { Button, Col, Form, Input, Row } from "antd";
-import { Client, getAccessKey } from "../tools";
+import { Button, Col, Form, Input, Row } from 'antd';
+import { Client, getAccessKey } from '../tools';
 
-import React from "react";
-import { withRouter } from "react-router-dom";
+import React from 'react';
+import { withRouter } from 'react-router-dom';
 
 export const Login = withRouter(({ history }) => {
-  if (getAccessKey()) history.push("/dashboard");
+  if (getAccessKey()) history.push('/');
   const onFinish = async (body) => {
-    const { data } = await Client.post("/platform/auth/email", body);
-    localStorage.setItem("sessionId", data.sessionId);
-    history.push("/");
+    const { data } = await Client.post('/platform/auth/email', body);
+    localStorage.setItem('sessionId', data.sessionId);
+    history.push('/');
   };
 
   return (
-    <Row style={{ minHeight: "100vh" }} justify="center" align="middle">
+    <Row style={{ minHeight: '100vh' }} justify="center" align="middle">
       <Col lg={8} sm={12} align="center">
         <Form name="basic" layout="vertical" size="large" onFinish={onFinish}>
           <Form.Item label="이메일" name="email">

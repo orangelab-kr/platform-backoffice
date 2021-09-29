@@ -597,7 +597,7 @@ export const RidesDetails = withRouter(() => {
                             '적용 안함'
                           ) : (
                             <Link
-                              to={`/dashboard/discountGroups/${ride.discountGroupId}`}
+                              to={`/discountGroups/${ride.discountGroupId}`}
                             >
                               {ride.discountId}
                             </Link>
@@ -1021,7 +1021,7 @@ export const RidesDetails = withRouter(() => {
                                     <Col span={24}>
                                       <b>요청 시점: </b>
                                       <Typography.Text copyable={true}>
-                                        {dayjs(ride.createdAt).format(
+                                        {dayjs(payment.createdAt).format(
                                           'M월 D일 H시 m분 s초'
                                         )}
                                       </Typography.Text>
@@ -1029,11 +1029,11 @@ export const RidesDetails = withRouter(() => {
                                     <Col span={24}>
                                       <b>처리 시점: </b>
                                       <Typography.Text copyable={true}>
-                                        {ride.processedAt
+                                        {payment.processedAt
                                           ? dayjs(ride.processedAt).format(
                                               'M월 D일 H시 m분 s초'
                                             )
-                                          : '처리 되지 않음'}
+                                          : '처리되지 않음'}
                                       </Typography.Text>
                                     </Col>
                                   </Row>

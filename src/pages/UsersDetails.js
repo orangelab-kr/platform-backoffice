@@ -22,8 +22,8 @@ export const UsersDetails = withRouter(({ history }) => {
   const [user, setUser] = useState({ name: '로딩 중...' });
   const params = useParams();
   const userId = params.userId !== 'add' ? params.userId : '';
-  const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
+  const form = Form.useForm()[0];
 
   const loadUser = () => {
     if (!userId) return;
@@ -43,7 +43,7 @@ export const UsersDetails = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
-        history.push(`/dashboard/users`);
+        history.push(`/users`);
       });
   };
 
@@ -54,7 +54,7 @@ export const UsersDetails = withRouter(({ history }) => {
       .then(({ data }) => {
         message.success(`${userId ? '수정' : '생성'}되었습니다.`);
         if (data.platformUserId) {
-          history.push(`/dashboard/users/${data.platformUserId}`);
+          history.push(`/users/${data.platformUserId}`);
         }
       });
   };

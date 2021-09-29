@@ -8,7 +8,7 @@ const { Title } = Typography;
 const { Search } = Input;
 
 export const DiscountGroups = withRouter(({ history }) => {
-  const [dataSource, setDataSource] = useState([]);
+  const [discountGroups, setDiscountGroups] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -18,9 +18,7 @@ export const DiscountGroups = withRouter(({ history }) => {
     {
       title: 'UUID',
       dataIndex: 'discountGroupId',
-      render: (value) => (
-        <Link to={`/dashboard/discountGroups/${value}`}>{value}</Link>
-      ),
+      render: (value) => <Link to={`/discountGroups/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
@@ -51,7 +49,7 @@ export const DiscountGroups = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then((res) => {
         const { discountGroups, total } = res.data;
-        setDataSource(discountGroups);
+        setDiscountGroups(discountGroups);
         setTotal(total);
       });
   };
@@ -90,13 +88,13 @@ export const DiscountGroups = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={dataSource}
+          dataSource={discountGroups}
           rowKey="platformUserId"
           loading={isLoading}
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

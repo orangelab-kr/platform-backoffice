@@ -35,37 +35,31 @@ export const Dashboard = withRouter(({ history, children }) => {
           mode="inline"
           onClick={onClick}
         >
-          <Menu.Item key="/dashboard/main" icon={<HomeOutlined />}>
+          <Menu.Item key="/" icon={<HomeOutlined />}>
             대시보드
           </Menu.Item>
-          <Menu.Item key="/dashboard/users" icon={<UserOutlined />}>
+          <Menu.Item key="/users" icon={<UserOutlined />}>
             사용자
           </Menu.Item>
-          <Menu.Item key="/dashboard/accessKeys" icon={<KeyOutlined />}>
+          <Menu.Item key="/accessKeys" icon={<KeyOutlined />}>
             액세스 키
           </Menu.Item>
-          <Menu.Item key="/dashboard/permissionGroups" icon={<LockOutlined />}>
+          <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>
             권한 그룹
           </Menu.Item>
-          <Menu.Item key="/dashboard/rides" icon={<SolutionOutlined />}>
+          <Menu.Item key="/rides" icon={<SolutionOutlined />}>
             라이드
           </Menu.Item>
-          <Menu.Item
-            key="/dashboard/discountGroups"
-            icon={<PercentageOutlined />}
-          >
+          <Menu.Item key="/discountGroups" icon={<PercentageOutlined />}>
             할인 그룹
           </Menu.Item>
-          <Menu.Item
-            key="/dashboard/webhooks"
-            icon={<DeploymentUnitOutlined />}
-          >
+          <Menu.Item key="/webhooks" icon={<DeploymentUnitOutlined />}>
             웹훅
           </Menu.Item>
-          <Menu.Item key="/dashboard/logs" icon={<HistoryOutlined />}>
+          <Menu.Item key="/logs" icon={<HistoryOutlined />}>
             로그
           </Menu.Item>
-          <Menu.Item key="/dashboard/settings" icon={<SettingOutlined />}>
+          <Menu.Item key="/settings" icon={<SettingOutlined />}>
             설정
           </Menu.Item>
         </Menu>
