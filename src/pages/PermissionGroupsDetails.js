@@ -62,7 +62,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
 
   const deletePermissionGroup = () => {
     setLoading(true);
-    Client.delete(`/permissionGroups/${permissionGroupId}`)
+    Client.delete(`/platform/permissionGroups/${permissionGroupId}`)
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
@@ -96,7 +96,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
                 {permissionGroupId ? permissionGroup.name : '새로운 권한 그룹'}
               </Title>
             </Col>
-            {permissionGroup.platformId && (
+            {(!permissionGroupId || permissionGroup.platformId) && (
               <>
                 <Col>
                   <Row gutter={[4, 0]}>
@@ -138,7 +138,7 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
               </>
             )}
           </Row>
-          {!isLoading && !permissionGroup.platformId && (
+          {!isLoading && permissionGroupId && !permissionGroup.platformId && (
             <Alert
               showIcon
               style={{ marginBottom: 10 }}
@@ -156,14 +156,24 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
             </Form.Item>
           )}
           <Form.Item name="name" label="이름">
-            <Input disabled={isLoading || !permissionGroup.platformId} />
+            <Input
+              disabled={
+                isLoading || (permissionGroupId && !permissionGroup.platformId)
+              }
+            />
           </Form.Item>
           <Form.Item name="description" label="설명">
-            <Input disabled={isLoading || !permissionGroup.platformId} />
+            <Input
+              disabled={
+                isLoading || (permissionGroupId && !permissionGroup.platformId)
+              }
+            />
           </Form.Item>
           <Form.Item name="permissions" label="권한 목록">
             <PermissionsSelect
-              isLoading={isLoading || !permissionGroup.platformId}
+              isLoading={
+                isLoading || (permissionGroupId && !permissionGroup.platformId)
+              }
             />
           </Form.Item>
         </Form>
