@@ -190,7 +190,7 @@ export const DiscountGroupsDetails = withRouter(({ history }) => {
                     </Descriptions.Item>
                     <Descriptions.Item label="자동 만료">
                       {discountGroup.validity
-                        ? `${discountGroup.validity / 1000}초`
+                        ? `${discountGroup.validity}초`
                         : '만료 없음'}
                     </Descriptions.Item>
                     <Descriptions.Item label="발급 일자">
