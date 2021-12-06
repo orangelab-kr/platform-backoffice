@@ -44,6 +44,8 @@ export const Webhooks = withRouter(({ history }) => {
           ? '결제 호출'
           : webhook.type === 'refund'
           ? '환불 호출'
+          : webhook.type === 'speedChange'
+          ? '속도변경 호출'
           : webhook.type,
     },
     {
@@ -155,6 +157,8 @@ export const Webhooks = withRouter(({ history }) => {
                         ? '결제 호출'
                         : type === 'refund'
                         ? '환불 호출'
+                        : type === 'speedChange'
+                        ? '속도변경 호출'
                         : type
                     }
                   >

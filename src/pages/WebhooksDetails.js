@@ -164,6 +164,8 @@ export const WebhooksDetails = withRouter(({ history }) => {
                         ? '결제 호출'
                         : request.webhook.type === 'refund'
                         ? '환불 호출'
+                        : request.webhook.type === 'speedChange'
+                        ? '속도변경 호출'
                         : request.webhook.type}
                     </Descriptions.Item>
                     <Descriptions.Item label="웹훅 ID" span={2}>
