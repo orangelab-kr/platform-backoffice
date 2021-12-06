@@ -23,12 +23,11 @@ import {
   Radio,
   Result,
   Row,
+  Select,
   Tabs,
   Tag,
   Typography,
-  Select,
 } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import moment from 'moment';
@@ -56,12 +55,29 @@ export const RidesDetails = withRouter(() => {
   });
 
   const debouncedTerminateLocation = useDebounce(terminateLocation, 1000);
-  const addPaymentForm = useForm()[0];
-  const terminateForm = useForm()[0];
-  const changeDiscountForm = useForm()[0];
+  const addPaymentForm = Form.useForm()[0];
+  const terminateForm = Form.useForm()[0];
+  const changeDiscountForm = Form.useForm()[0];
   const params = useParams();
   const rideId = params.rideId !== 'add' ? params.rideId : '';
   const [isLoading, setLoading] = useState(false);
+  const createMarkerIcon = ({ idx, createdAt }) => {
+    const displayedTime = dayjs(createdAt).format('YYYY년 M월 D일 H시 m분 s초');
+    const showTime = `this.innerHTML = '${displayedTime}'; this.style.zIndex = 10000;`;
+    const hideTime = `this.innerHTML = '${idx}'; this.style.zIndex = 0;`;
+    return `<div\
+  style="\
+    background-color: #fff;\n
+    border-radius: 10%;\
+    padding: 2px 5px;
+    text-align: center;\
+    font-weight: 700"
+  onMouseOver="${showTime}"
+  onTouchStart="${showTime}"
+  onMouseOut="${hideTime}"
+  onTouchEnd="${hideTime}"
+>${idx}</div>`;
+  };
 
   const loadRide = () => {
     if (!rideId) return;
@@ -714,13 +730,25 @@ export const RidesDetails = withRouter(() => {
                             height: '400px',
                           }}
                           defaultZoom={14}
-                          center={
+                          defaultCenter={
                             new window.naver.maps.LatLng(
                               ride.startedKickboardLocation.latitude,
                               ride.startedKickboardLocation.longitude
                             )
                           }
                         >
+                          {timeline.map(
+                            ({ latitude, longitude, createdAt }, idx) => (
+                              <Marker
+                                position={{ lat: latitude, lng: longitude }}
+                                icon={{
+                                  content: createMarkerIcon({ idx, createdAt }),
+                                  anchor: { x: 18, y: 15 },
+                                }}
+                              />
+                            )
+                          )}
+
                           <Polyline
                             path={[
                               ...timeline.map(
@@ -731,10 +759,10 @@ export const RidesDetails = withRouter(() => {
                                   )
                               ),
                             ]}
-                            strokeColor={'#5347AA'}
+                            strokeColor={'#303030'}
                             strokeStyle={'solid'}
                             strokeOpacity={0.5}
-                            strokeWeight={5}
+                            strokeWeight={2}
                           />
                         </NaverMap>
                       )}

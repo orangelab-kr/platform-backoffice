@@ -126,7 +126,9 @@ export const Rides = withRouter(({ history }) => {
           ? '관리자 요청'
           : terminatedType === 'UNUSED'
           ? '자동 종료'
-          : '',
+          : terminatedType === 'LOW_BATTERY'
+          ? '배터리 부족'
+          : terminatedType,
     },
     {
       title: '종료 일자',
