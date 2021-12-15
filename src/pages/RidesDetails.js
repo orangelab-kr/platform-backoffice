@@ -25,7 +25,6 @@ import {
   Row,
   Select,
   Tabs,
-  Tag,
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
@@ -34,6 +33,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { Link, useParams, withRouter } from 'react-router-dom';
+import { PaymentItem, RefundModal } from '../components';
 import { Client, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
@@ -41,6 +41,7 @@ export const RidesDetails = withRouter(() => {
   const [ridePayments, setRidePayments] = useState([]);
   const [timeline, setTimeline] = useState([]);
   const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showRefund, setShowRefund] = useState(null);
   const [showTerminate, setShowTerminate] = useState(false);
   const [showChangeDiscount, setShowChangeDiscount] = useState(false);
   const [terminateReceipt, setTerminateReceipt] = useState(null);
@@ -160,10 +161,10 @@ export const RidesDetails = withRouter(() => {
     getTimeline();
   };
 
-  const refundRidePayment = (paymentId) => {
+  const refundPayment = (paymentId, data) => {
     setLoading(true);
 
-    Client.delete(`/ride/rides/${rideId}/payments/${paymentId}`)
+    Client.delete(`/ride/rides/${rideId}/payments/${paymentId}`, { data })
       .finally(() => setLoading(false))
       .then(() => loadRidePayments());
   };
@@ -800,8 +801,18 @@ export const RidesDetails = withRouter(() => {
                 <Card>
                   <Row justify="space-between">
                     <Col>
-                      <Typography.Title level={4}>결제 정보</Typography.Title>
+                      <Typography.Title level={4}>
+                        결제 정보 ({ride.price.toLocaleString()}원)
+                      </Typography.Title>
                     </Col>
+                    {showRefund && (
+                      <RefundModal
+                        payment={showRefund}
+                        refundPayment={refundPayment}
+                        onClose={() => setShowRefund(null)}
+                      />
+                    )}
+
                     {ride.terminatedAt && (
                       <Col>
                         <Button
@@ -906,7 +917,7 @@ export const RidesDetails = withRouter(() => {
                         <Popconfirm
                           title="정말로 모두 환불하시겠습니까?"
                           disabled={isLoading}
-                          onConfirm={() => refundRidePayment('')}
+                          onConfirm={() => refundPayment('')}
                           okText="전체 환불"
                           cancelText="취소"
                         >
@@ -1010,88 +1021,15 @@ export const RidesDetails = withRouter(() => {
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="결제 내역" key="histories">
                         <List
+                          bordered
                           loading={isLoading}
                           itemLayout="vertical"
                           dataSource={ridePayments}
-                          bordered
                           renderItem={(payment) => (
-                            <List.Item>
-                              <Row justify="space-between">
-                                <Col>
-                                  <Typography.Title
-                                    level={5}
-                                    copyable={true}
-                                    delete={payment.refundedAt}
-                                  >
-                                    {`${payment.amount.toLocaleString()}원 / ${
-                                      payment.description || '설명 없음'
-                                    }`}
-                                  </Typography.Title>
-                                </Col>
-                                <Col>
-                                  {payment.paymentType === 'SERVICE' ? (
-                                    <Tag color="success" style={{ margin: 0 }}>
-                                      서비스 요금
-                                    </Tag>
-                                  ) : (
-                                    <Tag
-                                      color="processing"
-                                      style={{ margin: 0 }}
-                                    >
-                                      추가 요금
-                                    </Tag>
-                                  )}
-                                </Col>
-                              </Row>
-                              <Row justify="space-between">
-                                <Col>
-                                  <Row>
-                                    <Col span={24}>
-                                      <b>요청 시점: </b>
-                                      <Typography.Text copyable={true}>
-                                        {dayjs(payment.createdAt).format(
-                                          'M월 D일 H시 m분 s초'
-                                        )}
-                                      </Typography.Text>
-                                    </Col>
-                                    <Col span={24}>
-                                      <b>처리 시점: </b>
-                                      <Typography.Text copyable={true}>
-                                        {payment.processedAt
-                                          ? dayjs(ride.processedAt).format(
-                                              'M월 D일 H시 m분 s초'
-                                            )
-                                          : '처리되지 않음'}
-                                      </Typography.Text>
-                                    </Col>
-                                  </Row>
-                                </Col>
-                                <Col>
-                                  <Popconfirm
-                                    title="정말로 환불하시겠습니까?"
-                                    disabled={isLoading || payment.refundedAt}
-                                    onConfirm={() =>
-                                      refundRidePayment(payment.paymentId)
-                                    }
-                                    okText="환불"
-                                    cancelText="취소"
-                                  >
-                                    <Button
-                                      size="small"
-                                      icon={<StopOutlined />}
-                                      disabled={payment.refundedAt}
-                                      danger
-                                    >
-                                      {!payment.refundedAt
-                                        ? '환불'
-                                        : dayjs(ride.processedAt).format(
-                                            '환불됨: M월 D일 H시 m분 s초'
-                                          )}
-                                    </Button>
-                                  </Popconfirm>
-                                </Col>
-                              </Row>
-                            </List.Item>
+                            <PaymentItem
+                              payment={payment}
+                              showRefundModel={() => setShowRefund(payment)}
+                            />
                           )}
                         />
                       </Tabs.TabPane>
